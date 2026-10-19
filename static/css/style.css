@@ -4366,3 +4366,5 @@ html[data-theme="dark"] body.travel-site .site-header .theme-toggle { border-col
 .travel-site .quote-share .quote-btn-light { background: #fff; color: #5a2a96; box-shadow: inset 0 0 0 1px #cdb6ec; }
 .travel-site .quote-share .btn[disabled] { opacity: .7; cursor: progress; }
 .quote-share .quote-share-status { padding: .6rem .8rem; border-radius: 8px; background: #fff; color: #1f5a3c; font-size: .86rem; word-break: normal; }
+/* The later full-width grid safeguard overrode the phone gutter, pushing the blog list 16px past the screen edge. */
+@media(max-width:640px){body.travel-site .waadi-blog-layout.container{width:calc(100% - 2rem);margin-inline:auto}body.travel-site .waadi-blog-heading.container{width:100%;margin-inline:0}}
