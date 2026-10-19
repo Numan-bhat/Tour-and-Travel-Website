@@ -66,7 +66,6 @@ def use_persistent_uploads(persistent_dir):
     bundled_dir = app.config["UPLOAD_FOLDER"]
     if os.path.realpath(bundled_dir) == os.path.realpath(persistent_dir):
         return
-    set_aside = bundled_dir + ".bundled"
     try:
         os.makedirs(persistent_dir, exist_ok=True)
         if os.path.islink(bundled_dir):
@@ -76,14 +75,14 @@ def use_persistent_uploads(persistent_dir):
                 target = os.path.join(persistent_dir, name)
                 if os.path.isfile(os.path.join(bundled_dir, name)) and not os.path.exists(target):
                     shutil.copy2(os.path.join(bundled_dir, name), target)
-            shutil.rmtree(set_aside, ignore_errors=True)
-            os.rename(bundled_dir, set_aside)
+            # Every bundled photo is now on the volume. Delete rather than rename the folder:
+            # container filesystems (overlayfs) refuse to rename image directories.
+            shutil.rmtree(bundled_dir)
         os.symlink(persistent_dir, bundled_dir, target_is_directory=True)
-        shutil.rmtree(set_aside, ignore_errors=True)
     except OSError:
         app.logger.exception("Could not use %s for uploads; falling back to static/uploads", persistent_dir)
-        if not os.path.exists(bundled_dir) and os.path.isdir(set_aside):
-            os.rename(set_aside, bundled_dir)
+        if not os.path.exists(bundled_dir) and os.path.isdir(persistent_dir):
+            shutil.copytree(persistent_dir, bundled_dir)
 
 
 if os.environ.get("UPLOAD_DIR", "").strip():
