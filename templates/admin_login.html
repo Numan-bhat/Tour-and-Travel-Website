@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<section class="page-section">
+  <div class="container" style="max-width: 420px;">
+    <div class="contact-info-card">
+      <h1>Admin Login</h1>
+      {% if error %}
+      <p style="color: #b91c1c;">{{ error }}</p>
+      {% endif %}
+      <form action="/admin/login" method="post" class="contact-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <label for="username">Username</label>
+        <input id="username" name="username" type="text" required />
+
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" required />
+
+        <button class="btn" type="submit">Login</button>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

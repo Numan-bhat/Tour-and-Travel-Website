@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+{% block title %}{{ blog.get('meta_title') or blog.title }} | Waadi Kashmir Travels{% endblock %}
+{% block meta_description %}{{ blog.get('meta_description') or blog.excerpt }}{% endblock %}
+{% block structured_data %}<script type="application/ld+json">{{ {"@context":"https://schema.org","@type":"BlogPosting","headline":blog.title,"description":blog.excerpt,"image":request.url_root.rstrip('/') ~ blog.image_url,"author":{"@type":"Organization","name":"Waadi Kashmir Travels"},"datePublished":"2026-08-14","mainEntityOfPage":request.url}|tojson }}</script>{% endblock %}
+
+{% block content %}
+<section class="blog-banner blog-detail-banner">
+  <div class="container">
+    <p class="blog-breadcrumb"><a href="/">Home</a><span>/</span><a href="/blogs">Blogs</a><span>/</span> {{ blog.category }}</p>
+    <h1>{{ blog.title }}</h1>
+  </div>
+</section>
+<article class="blog-detail page-section">
+  <div class="container">
+    <figure class="blog-detail-hero-image">
+      <img src="{{ blog.image_url }}" alt="{{ blog.title }}" decoding="async" />
+    </figure>
+    <p class="reference-blog-category">{{ blog.category }}</p>
+    <p class="blog-detail-meta">By Waadi Kashmir Travels · {{ blog.date }}</p>
+    <p>{{ blog.content }}</p>
+    {% for section in blog.get('sections', []) %}
+    <section class="blog-detail-section">
+      <h2>{{ section.heading }}</h2>
+      <p>{{ section.body }}</p>
+    </section>
+    {% endfor %}
+    {% if blog.get('sources') %}
+    <section class="blog-detail-sources">
+      <h2>Check current official guidance</h2>
+      <p>Safety information changes. Review these sources again before booking and departure:</p>
+      <ul>{% for source in blog.sources %}<li><a href="{{ source.url }}" target="_blank" rel="noopener noreferrer">{{ source.title }}</a></li>{% endfor %}</ul>
+    </section>
+    {% endif %}
+    <a class="blog-back-link" href="/blogs">← Back to all blogs</a>
+  </div>
+</article>
+{% endblock %}

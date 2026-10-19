@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+{% block content %}
+<section class="page-section">
+  <div class="container">
+    <div class="admin-header">
+      <div>
+        <p class="eyebrow">Website content</p>
+        <h1>Blog image manager</h1>
+      </div>
+      <div class="admin-actions">
+        <a class="btn btn-outline" href="/admin/media">Upload images</a>
+        <a class="btn" href="/admin">Dashboard</a>
+      </div>
+    </div>
+
+    <p class="admin-intro">Replace the picture for each blog displayed on your website. Upload a photo in Media Manager first, then choose it below and save.</p>
+
+    <div class="admin-table blog-image-table">
+      <table>
+        <thead>
+          <tr><th>Current image</th><th>Blog post</th><th>Replace image</th></tr>
+        </thead>
+        <tbody>
+          {% for blog in blogs %}
+          <tr>
+            <td><img src="{{ blog.image_url }}" alt="{{ blog.title }}" class="blog-image-preview"></td>
+            <td><strong>{{ blog.title }}</strong><br><small>{{ blog.category }}</small></td>
+            <td>
+              <form method="post" class="blog-image-form">
+                <input type="hidden" name="slug" value="{{ blog.slug }}">
+                <select aria-label="Choose an uploaded image" onchange="this.form.querySelector('[name=image_url]').value=this.value">
+                  <option value="">Choose an uploaded image</option>
+                  {% for image in media_images %}
+                  <option value="{{ image }}">{{ image.split('/')[-1] }}</option>
+                  {% endfor %}
+                </select>
+                <input name="image_url" value="{{ blog.image_url }}" placeholder="Image URL">
+                <button class="btn" type="submit">Save image</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+{% endblock %}

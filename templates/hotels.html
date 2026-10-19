@@ -1,0 +1,78 @@
+{% extends "layout.html" %}
+{% block title %}Hotels in Kashmir | Waadi Kashmir Travels{% endblock %}
+{% block meta_description %}Explore handpicked hotels and resorts across Srinagar, Gulmarg, Pahalgam and Sonamarg with local booking support.{% endblock %}
+
+{% block content %}
+<section class="hotel-hero">
+  <div class="container">
+    <span class="section-tag">Handpicked stays</span>
+    <h1>Hotels in Kashmir</h1>
+    <p>Find a stay that fits your route, comfort and budget. Our local team confirms current rates and availability before you book.</p>
+  </div>
+</section>
+
+<section class="hotel-search-section">
+  <div class="container">
+    <form class="hotel-search" id="hotelSearch">
+      <label>Destination
+        <select id="hotelDestination"><option value="">All destinations</option><option>Srinagar</option><option>Gulmarg</option><option>Pahalgam</option><option>Sonamarg</option></select>
+      </label>
+      <label>Check in<input type="date" id="hotelCheckin"></label>
+      <label>Check out<input type="date" id="hotelCheckout"></label>
+      <label>Guests<select><option>1 Adult</option><option selected>2 Adults</option><option>2 Adults, 1 Child</option><option>Family / Group</option></select></label>
+      <button class="btn" type="submit">Browse matching stays</button>
+    </form>
+  </div>
+</section>
+
+<section class="hotel-catalog page-section">
+  <div class="container hotel-layout">
+    <aside class="hotel-filters">
+      <div class="hotel-filter-heading"><h2>Filter by</h2><div><button class="hotel-filter-toggle" type="button" id="hotelFilterToggle" aria-expanded="false" aria-controls="hotelFilterOptions">Show filters</button><button type="button" id="clearHotelFilters">Clear</button></div></div>
+      <div class="hotel-filter-options" id="hotelFilterOptions">
+        <fieldset><legend>Price per night</legend><label><input type="radio" name="price" value="" checked> Any price</label><label><input type="radio" name="price" value="20000"> Up to ₹20,000</label><label><input type="radio" name="price" value="25000"> Up to ₹25,000</label><label><input type="radio" name="price" value="30000"> Up to ₹30,000</label></fieldset>
+        <fieldset><legend>Hotel star</legend><label><input type="checkbox" class="hotel-star" value="5"> 5 star</label><label><input type="checkbox" class="hotel-star" value="4"> 4 star</label></fieldset>
+        <fieldset><legend>Hotel theme</legend><label><input type="checkbox" class="hotel-theme" value="luxury"> Luxury</label><label><input type="checkbox" class="hotel-theme" value="boutique"> Boutique</label><label><input type="checkbox" class="hotel-theme" value="romantic"> Romantic</label><label><input type="checkbox" class="hotel-theme" value="heritage"> Heritage</label></fieldset>
+      </div>
+    </aside>
+
+    <div class="hotel-results">
+      <div class="hotel-results-head"><h2><span id="hotelCount">{{ hotels|length }}</span> hotels found</h2><label>Sort by <select id="hotelSort"><option value="featured">Featured</option><option value="low">Price: low to high</option><option value="high">Price: high to low</option><option value="az">Name: A–Z</option></select></label></div>
+      <div class="hotel-grid" id="hotelGrid">
+        {% for hotel in hotels %}
+        <article class="hotel-card" data-location="{{ hotel.location|lower }}" data-price="{{ hotel.price }}" data-stars="{{ hotel.stars }}" data-theme="{{ hotel.theme }}" data-name="{{ hotel.name|lower }}" data-featured="{{ 1 if hotel.featured else 0 }}">
+          <div class="hotel-card-image"><img src="{{ hotel.image or url_for('static', filename='images/waadi-kashmir-travels-logo-enhanced.webp') }}" alt="Scenic view for {{ hotel.name }} stay" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/waadi-kashmir-travels-logo-enhanced.webp') }}'">{% if hotel.featured %}<span>Featured</span>{% endif %}</div>
+          <div class="hotel-card-body">
+            <div class="hotel-location">⌖ {{ hotel.location }}</div>
+            <h3>{{ hotel.name }}</h3>
+            <div class="hotel-rating" aria-label="{{ hotel.stars }} star property category">{% for _ in range(hotel.stars) %}★{% endfor %} <small>property category</small></div>
+            <p>Comfortable Kashmir stay with local itinerary and transport support available from our team.</p>
+            <div class="hotel-card-bottom"><div><small>From</small><strong>₹{{ "{:,}".format(hotel.price) }} <em>/ night</em></strong></div><a class="btn" href="/hotel/{{ hotel.slug }}/">View details</a></div>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+      <div class="hotel-empty" id="hotelEmpty" hidden><h3>No matching hotels</h3><p>Try changing your filters or ask us to find a suitable stay.</p><a class="btn" href="/contact">Ask our local team</a></div>
+      <p class="hotel-rate-note">Dates and guests help prepare your enquiry; this page does not show live inventory. Displayed rates are indicative and may change by season, room type and availability. We confirm the final quote before booking.</p>
+    </div>
+  </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const grid = document.getElementById('hotelGrid'), cards = [...grid.children], destination = document.getElementById('hotelDestination'), sort = document.getElementById('hotelSort'), count = document.getElementById('hotelCount'), empty = document.getElementById('hotelEmpty');
+  const apply = () => {
+    const price = +(document.querySelector('input[name="price"]:checked')?.value || 0), stars = [...document.querySelectorAll('.hotel-star:checked')].map(x => x.value), themes = [...document.querySelectorAll('.hotel-theme:checked')].map(x => x.value), place = destination.value.toLowerCase();
+    let visible = cards.filter(card => (!place || card.dataset.location === place) && (!price || +card.dataset.price <= price) && (!stars.length || stars.includes(card.dataset.stars)) && (!themes.length || themes.some(t => card.dataset.theme.includes(t))));
+    visible.sort((a,b) => sort.value === 'low' ? +a.dataset.price-+b.dataset.price : sort.value === 'high' ? +b.dataset.price-+a.dataset.price : sort.value === 'az' ? a.dataset.name.localeCompare(b.dataset.name) : +b.dataset.featured-+a.dataset.featured);
+    cards.forEach(card => card.hidden = true); visible.forEach(card => { card.hidden = false; grid.appendChild(card); }); count.textContent = visible.length; empty.hidden = visible.length !== 0;
+  };
+  document.getElementById('hotelSearch').addEventListener('submit', e => { e.preventDefault(); apply(); document.querySelector('.hotel-catalog').scrollIntoView({behavior:'smooth'}); });
+  document.querySelectorAll('.hotel-filters input').forEach(input => input.addEventListener('change', apply)); sort.addEventListener('change', apply);
+  const filterPanel = document.querySelector('.hotel-filters'), filterToggle = document.getElementById('hotelFilterToggle');
+  filterToggle.addEventListener('click', () => { const open = filterPanel.classList.toggle('is-open'); filterToggle.setAttribute('aria-expanded', String(open)); filterToggle.textContent = open ? 'Hide filters' : 'Show filters'; });
+  document.getElementById('clearHotelFilters').addEventListener('click', () => { destination.value=''; document.querySelector('input[name="price"][value=""]').checked=true; document.querySelectorAll('.hotel-star,.hotel-theme').forEach(x=>x.checked=false); sort.value='featured'; apply(); });
+});
+</script>
+<script>document.addEventListener('DOMContentLoaded',()=>{const a=document.getElementById('hotelCheckin'),b=document.getElementById('hotelCheckout'),today=new Date().toISOString().slice(0,10);a.min=today;b.min=today;a.addEventListener('change',()=>{b.min=a.value||today;if(b.value&&b.value<=a.value)b.value=''})});</script>
+{% endblock %}

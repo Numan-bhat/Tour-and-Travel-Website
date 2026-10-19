@@ -1,0 +1,147 @@
+{% extends "layout.html" %}
+{% block title %}{{ 'Edit' if quote.id else 'Create' }} quotation | Waadi Kashmir Travels{% endblock %}
+{% block robots %}noindex,nofollow{% endblock %}
+{% block content %}
+{% set locations = ['Srinagar','Pahalgam','Gulmarg','Sonamarg','Doodhpathri','Yusmarg','Kokernag','Gurez','Aru Valley','Betaab Valley','Dal Lake','Nigeen Lake','Kargil','Leh','Nubra Valley','Pangong Lake','Jammu','Katra','Srinagar Airport','Jammu Railway Station'] %}
+<section class="page-section">
+  <div class="container quote-form-shell">
+    <div class="admin-header"><h1>{{ 'Edit quotation ' ~ quote.quote_number if quote.id else 'Create quotation' }}</h1><div>{% if quote.id %}<a class="btn" href="/admin/quotes/{{ quote.id }}">View quotation</a>{% endif %}<a class="btn" href="/admin/quotes">All quotations</a></div></div>
+    {% if error %}<p class="quote-form-error" role="alert">{{ error }}</p>{% endif %}
+    {% if tours %}<form method="get" class="quote-start-from no-print"><input type="hidden" name="lead" value="{{ lead_id or '' }}"><label>Start from a tour package<select name="tour" onchange="this.form.submit()"><option value="">Blank quotation</option>{% for tour in tours %}<option value="{{ tour.id }}"{% if request.args.get('tour') == tour.id|string %} selected{% endif %}>{{ tour.title }} · {{ tour.price }}/person</option>{% endfor %}</select></label><noscript><button class="btn" type="submit">Load</button></noscript><small>Fills the itinerary, inclusions and price. Everything stays editable.</small></form>{% endif %}
+    <form method="post" class="contact-form quote-form" id="quote-form">
+      {% if lead_id %}<input type="hidden" name="lead" value="{{ lead_id }}">{% endif %}
+
+      <fieldset class="itinerary-builder">
+        <legend>Client & trip</legend>
+        <div class="form-row"><label>Client name<input name="client_name" required value="{{ quote.client_name or '' }}"></label><label>Email<input name="client_email" type="email" required value="{{ quote.client_email or '' }}"></label></div>
+        <div class="form-row"><label>Phone / WhatsApp<input name="client_phone" value="{{ quote.client_phone or '' }}"></label><label>Trip / package<input name="trip_name" required placeholder="e.g. Kashmir family trip 6N/7D" value="{{ quote.trip_name or '' }}"></label></div>
+        <div class="quote-form-grid">
+          <label>Adults<input name="adults" type="number" min="1" value="{{ quote.adults or quote.travelers or 2 }}" data-quote-adults></label>
+          <label>Children<input name="children" type="number" min="0" value="{{ quote.children or 0 }}" data-quote-children></label>
+          <label>Rooms<input name="rooms" type="number" min="1" value="{{ quote.rooms or '' }}" placeholder="No."></label>
+          <label>Travel date<input name="travel_date" type="date" value="{{ quote.travel_date or '' }}"></label>
+          <label>Valid until<input name="valid_until" type="date" value="{{ quote.valid_until or '' }}"></label>
+          <label>Status<select name="status">{% for status in statuses %}<option{% if (quote.status or 'Draft') == status %} selected{% endif %}>{{ status }}</option>{% endfor %}</select></label>
+        </div>
+      </fieldset>
+
+      <fieldset class="itinerary-builder">
+        <legend>Day-by-day itinerary</legend><p>Pick a suggested route or type your own. Leave unused days blank.</p>
+        <datalist id="quote-routes">{% for start in locations %}{% for end in locations if end != start %}<option value="{{ start }} to {{ end }}">{% endfor %}<option value="{{ start }} local sightseeing">{% endfor %}</datalist>
+        {% for day in range(1, day_rows + 1) %}{% set item = itinerary[day - 1] if day <= itinerary|length else {} %}
+        <div class="itinerary-row" data-repeat-row="day"><b>Day <span data-row-number>{{ day }}</span></b><label>Route<input name="day_{{ day }}_route" list="quote-routes" placeholder="e.g. Srinagar to Gulmarg" value="{{ item.route or '' }}"></label><label>Plan<textarea name="day_{{ day }}_plan" rows="2" placeholder="Sightseeing and activities">{{ item.plan or '' }}</textarea></label></div>
+        {% endfor %}
+        <button class="quote-add-row" type="button" data-add-row="day" data-max="30">+ Add day</button>
+      </fieldset>
+
+      <fieldset class="itinerary-builder hotel-builder">
+        <legend>Hotel & accommodation plan</legend><p>Hotels from your website and <a href="/admin/hotel-library" target="_blank" rel="noopener">hotel library</a> are suggested as you type, but you can enter any hotel or houseboat the client chooses. New hotels are added to the library, where you can give them a photo.</p>
+        <datalist id="quote-hotel-names">{% for hotel in site_hotels %}<option value="{{ hotel.name }}">{{ hotel.location }}</option>{% endfor %}</datalist>
+        <datalist id="quote-locations">{% for location in locations %}<option value="{{ location }}">{% endfor %}</datalist>
+        <datalist id="quote-rooms"><option value="Deluxe room"><option value="Super deluxe room"><option value="Premium room"><option value="Family room"><option value="Houseboat room"><option value="Cottage">{% for room in (site_hotels|map(attribute='room')|list + room_suggestions)|reject('equalto', '')|unique %}<option value="{{ room }}">{% endfor %}</datalist>
+        {% for stay in range(1, stay_rows + 1) %}{% set hotel = hotels[stay - 1] if stay <= hotels|length else {} %}
+        <div class="hotel-row" data-hotel-row data-repeat-row="hotel"><b>Stay <span data-row-number>{{ stay }}</span></b>
+          <label>Location<input name="hotel_{{ stay }}_location" list="quote-locations" placeholder="Location" value="{{ hotel.location or '' }}" data-hotel-location></label>
+          <label>Hotel name<input name="hotel_{{ stay }}_name" list="quote-hotel-names" placeholder="Type or pick a hotel" value="{{ hotel.name or '' }}" data-hotel-name></label>
+          <label>Room<input name="hotel_{{ stay }}_room" list="quote-rooms" placeholder="Room type" value="{{ hotel.room or '' }}" data-hotel-room></label>
+          <label>Meal plan<select name="hotel_{{ stay }}_meal"><option value="">Meal plan</option>{% for meal in ['CP - Breakfast','MAP - Breakfast & dinner','AP - All meals','Room only'] %}<option{% if hotel.meal_plan == meal %} selected{% endif %}>{{ meal }}</option>{% endfor %}</select></label>
+          <label>Nights<input name="hotel_{{ stay }}_nights" type="number" min="1" placeholder="No." value="{{ hotel.nights or '' }}"></label>
+        </div>
+        {% endfor %}
+        <button class="quote-add-row" type="button" data-add-row="hotel" data-max="15">+ Add stay</button>
+      </fieldset>
+
+      <fieldset class="itinerary-builder">
+        <legend>Transport</legend>
+        <datalist id="quote-vehicles">{% for name in ['Sedan (Dzire / Etios)','SUV (Innova Crysta)','Tempo Traveller 12 seater','Tempo Traveller 17 seater','Force Urbania','Mini bus'] + vehicle_names %}<option value="{{ name }}">{% endfor %}</datalist>
+        <div class="form-row"><label>Vehicle<input name="transport_vehicle" list="quote-vehicles" placeholder="e.g. SUV (Innova Crysta)" value="{{ transport.vehicle or '' }}"></label><label>Transport notes<input name="transport_notes" placeholder="e.g. Private cab for all transfers and sightseeing" value="{{ transport.notes or '' }}"></label></div>
+        <div class="form-row"><label>Pickup point<input name="transport_pickup" list="quote-locations" placeholder="e.g. Srinagar Airport" value="{{ transport.pickup or '' }}"></label><label>Drop point<input name="transport_drop" list="quote-locations" placeholder="e.g. Srinagar Airport" value="{{ transport.drop or '' }}"></label></div>
+      </fieldset>
+
+      <fieldset class="itinerary-builder">
+        <legend>Price breakdown</legend><p>Enter amounts in rupees. The total, GST, per-person price and advance are calculated for you.</p>
+        {% for index in range(1, 9) %}{% set line = price_lines[index - 1] if index <= price_lines|length else {} %}
+        <div class="price-row"{% if index > price_lines|length + 1 and index > 5 %} hidden{% endif %}><input name="price_{{ index }}_label" placeholder="Item, e.g. Houseboat upgrade" value="{{ line.label or '' }}" aria-label="Price item {{ index }}"><input name="price_{{ index }}_amount" inputmode="decimal" placeholder="₹ 0" value="{{ line.amount or '' }}" aria-label="Price amount {{ index }}" data-price-amount></div>
+        {% endfor %}
+        <div class="quote-form-grid">
+          <label>Discount (₹)<input name="discount" inputmode="decimal" value="{{ quote.discount if quote.discount and quote.discount != '0' else '' }}" placeholder="0" data-price-discount></label>
+          <label>GST %<input name="gst_percent" inputmode="decimal" value="{{ quote.gst_percent or '' }}" placeholder="0" data-price-gst></label>
+          <label>Advance to confirm %<input name="advance_percent" inputmode="decimal" value="{{ quote.advance_percent or '' }}" placeholder="0" data-price-advance></label>
+        </div>
+        <dl class="quote-live-total" data-price-summary><div><dt>Subtotal</dt><dd data-out="subtotal">₹0</dd></div><div><dt>GST</dt><dd data-out="gst">₹0</dd></div><div><dt>Total payable</dt><dd data-out="total">₹0</dd></div><div><dt>Per person</dt><dd data-out="per-person">₹0</dd></div><div><dt>Advance</dt><dd data-out="advance">₹0</dd></div></dl>
+      </fieldset>
+
+      <fieldset class="itinerary-builder">
+        <legend>Inclusions, exclusions & terms</legend><p>Write one point per line; each line becomes a bullet in the quotation. Terms are pre-filled from your last quotation.</p>
+        <label>Inclusions<textarea name="inclusions" rows="5" placeholder="Accommodation as per the hotel plan&#10;Private cab for all transfers and sightseeing&#10;Shikara ride on Dal Lake">{{ quote.inclusions or '' }}</textarea></label>
+        <label>Exclusions<textarea name="exclusions" rows="5">{{ quote.exclusions or '' }}</textarea></label>
+        <label>Payment terms<textarea name="payment_terms" rows="3">{{ quote.payment_terms or '' }}</textarea></label>
+        <label>Cancellation policy<textarea name="cancellation_policy" rows="4">{{ quote.cancellation_policy or '' }}</textarea></label>
+        <label>Bank / UPI details<textarea name="bank_details" rows="4" placeholder="Account name&#10;Bank, account number, IFSC&#10;UPI ID">{{ quote.bank_details or '' }}</textarea></label>
+        <label>Important travel information<textarea name="travel_info" rows="6">{{ quote.travel_info or '' }}</textarea></label>
+        <label>Important notes<textarea name="notes" rows="3" placeholder="Anything else the client should know">{{ quote.notes or '' }}</textarea></label>
+      </fieldset>
+
+      <button class="btn" type="submit">{{ 'Save changes' if quote.id else 'Create quotation' }}</button>
+    </form>
+  </div>
+</section>
+<script>
+(() => {
+  const form = document.getElementById("quote-form");
+  const siteHotels = {{ site_hotels|tojson }};
+  const number = (input) => parseFloat(String(input?.value || "").replace(/[^0-9.]/g, "")) || 0;
+  const inr = (value) => "₹" + Math.round(value).toLocaleString("en-IN");
+
+  // Picking one of the website's hotels fills its location and room type, without overwriting anything already typed.
+  form.addEventListener("change", (event) => {
+    if (!event.target.matches("[data-hotel-name]")) return;
+    const match = siteHotels.find((hotel) => hotel.name.toLowerCase() === event.target.value.trim().toLowerCase());
+    if (!match) return;
+    const row = event.target.closest("[data-hotel-row]");
+    const location = row.querySelector("[data-hotel-location]");
+    const room = row.querySelector("[data-hotel-room]");
+    if (!location.value) location.value = match.location;
+    if (!room.value) room.value = match.room;
+  });
+
+  // "+ Add day" / "+ Add stay": copy the last row, clear it and bump the number in its field names.
+  form.querySelectorAll("[data-add-row]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const rows = form.querySelectorAll(`[data-repeat-row="${button.dataset.addRow}"]`);
+      const last = rows[rows.length - 1];
+      const next = rows.length + 1;
+      const copy = last.cloneNode(true);
+      copy.querySelector("[data-row-number]").textContent = next;
+      copy.querySelectorAll("input, textarea, select").forEach((field) => {
+        field.name = field.name.replace(/_\d+_/, `_${next}_`);
+        if (field.tagName === "SELECT") field.selectedIndex = 0; else field.value = "";
+      });
+      last.after(copy);
+      copy.querySelector("input").focus();
+      if (next >= Number(button.dataset.max)) button.hidden = true;
+    });
+  });
+
+  const priceRows = [...form.querySelectorAll(".price-row")];
+  const updateTotals = () => {
+    const subtotal = priceRows.reduce((sum, row) => sum + number(row.querySelector("[data-price-amount]")), 0);
+    const taxable = Math.max(subtotal - number(form.querySelector("[data-price-discount]")), 0);
+    const gst = Math.round(taxable * number(form.querySelector("[data-price-gst]")) / 100);
+    const total = taxable + gst;
+    const travellers = Math.max(number(form.querySelector("[data-quote-adults]")) + number(form.querySelector("[data-quote-children]")), 1);
+    const out = (key, value) => { form.querySelector(`[data-out="${key}"]`).textContent = inr(value); };
+    out("subtotal", subtotal); out("gst", gst); out("total", total);
+    out("per-person", total / travellers); out("advance", total * number(form.querySelector("[data-price-advance]")) / 100);
+    // Reveal another empty price line once every visible one is in use.
+    const visible = priceRows.filter((row) => !row.hidden);
+    if (visible.every((row) => row.querySelector("input").value || number(row.querySelector("[data-price-amount]")))) {
+      const next = priceRows.find((row) => row.hidden);
+      if (next) next.hidden = false;
+    }
+  };
+  form.addEventListener("input", updateTotals);
+  updateTotals();
+})();
+</script>
+{% endblock %}

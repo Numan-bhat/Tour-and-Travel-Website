@@ -1,0 +1,58 @@
+{% extends "layout.html" %}
+{% block title %}Hotel library | Waadi Kashmir Travels{% endblock %}
+{% block robots %}noindex,nofollow{% endblock %}
+{% set location_options = ['Srinagar','Dal Lake','Nigeen Lake','Golden Dal Lake','Gulmarg','Pahalgam','Sonamarg','Doodhpathri','Yusmarg','Kokernag','Gurez','Leh','Nubra Valley','Pangong Lake','Kargil','Jammu','Katra'] %}
+{% macro hotel_fields(hotel) %}
+  <div class="library-fields">
+    <label>Hotel / houseboat name<input name="name" required value="{{ hotel.name or '' }}" placeholder="e.g. Jubilee Heritage"></label>
+    <label>Location<input name="location" list="library-locations" value="{{ hotel.location or '' }}" placeholder="e.g. Srinagar"></label>
+    <label>Category<select name="category"><option value="">Not set</option>{% for category in categories %}<option{% if hotel.category == category %} selected{% endif %}>{{ category }}</option>{% endfor %}</select></label>
+    <label>Upload photo<input name="photo" type="file" accept="image/*"></label>
+    <label class="library-wide">…or paste a photo link <small>(https:// link to a photo the hotel shared with you, e.g. from their media kit)</small><input name="photo_url" type="url" placeholder="https://"></label>
+    <label class="library-wide">Room types <small>(one per line)</small><textarea name="room_types" rows="3" placeholder="Deluxe room&#10;Super deluxe room&#10;Family suite">{{ hotel.room_types or '' }}</textarea></label>
+    <label class="library-wide">Internal notes <small>(not shown to clients)</small><textarea name="notes" rows="2" placeholder="Contact person, contract rate, best rooms…">{{ hotel.notes or '' }}</textarea></label>
+  </div>
+{% endmacro %}
+{% block content %}
+<section class="page-section"><div class="container">
+  <div class="admin-header"><h1>Hotel library</h1><div><a class="btn" href="/admin/quotes/new">Create quotation</a><a class="btn" href="/admin/quotes">Quotations</a></div></div>
+  <p class="library-intro">Hotels and houseboats across Kashmir for your quotations. Add a photo once and every quotation with that hotel shows it; hotels you type into a quotation are added here automatically. Categories come from public listings, which often disagree, so confirm with the hotel before quoting. Your {{ website_hotel_count }} website hotels already have photos and are not listed here.</p>
+  <datalist id="library-locations">{% for location in location_options %}<option value="{{ location }}">{% endfor %}</datalist>
+  {% if error %}<p class="quote-form-error" role="alert">{{ error }}</p>{% endif %}
+
+  <div class="admin-kpis library-kpis"><div><strong>{{ total_count }}</strong><span>Hotels in library</span></div><div><strong>{{ missing_photos }}</strong><span>Still need a photo</span></div><div><strong>{{ website_hotel_count }}</strong><span>Website hotels (with photos)</span></div></div>
+
+  <details class="library-add"{% if error or not total_count %} open{% endif %}>
+    <summary>+ Add a hotel</summary>
+    <form method="post" enctype="multipart/form-data" class="contact-form">{{ hotel_fields({}) }}<button class="btn" type="submit">Add to library</button></form>
+  </details>
+
+  <form method="get" class="quote-filters"><input type="search" name="q" value="{{ search }}" placeholder="Search hotel or location" aria-label="Search hotels"><select name="location" aria-label="Filter by location"><option value="">All locations</option>{% for location in locations %}<option{% if location_filter == location %} selected{% endif %}>{{ location }}</option>{% endfor %}</select><select name="category" aria-label="Filter by category"><option value="">All categories</option>{% for category in categories if category_counts[category] %}<option value="{{ category }}"{% if category_filter == category %} selected{% endif %}>{{ category }} ({{ category_counts[category] }})</option>{% endfor %}</select><select name="photo" aria-label="Filter by photo"><option value="">With and without photo</option><option value="missing"{% if photo_filter == 'missing' %} selected{% endif %}>Needs a photo</option></select><button class="btn" type="submit">Filter</button>{% if search or location_filter or photo_filter or category_filter %}<a href="/admin/hotel-library">Clear</a>{% endif %}<span>{{ hotels|length }} of {{ total_count }}</span></form>
+
+  <div class="library-grid">
+    {% for hotel in hotels %}
+    <article class="library-card{% if saved_id == hotel.id %} library-saved{% endif %}" id="hotel-{{ hotel.id }}">
+      {% if hotel.image_url %}<img src="{{ hotel.image_url }}" alt="{{ hotel.name }}" loading="lazy">{% else %}<div class="library-no-photo">No photo yet<small>Edit to add one</small></div>{% endif %}
+      <div class="library-card-body">
+        <p class="library-location">{{ hotel.location or 'Location not set' }}{% if hotel.stars %} · <span class="library-stars">{{ '★' * hotel.stars }}</span>{% elif hotel.category %} · <span class="library-stars">{{ hotel.category }}</span>{% endif %}</p>
+        <h2>{{ hotel.name }}</h2>
+        {% if hotel.room_list %}<p class="library-rooms">{{ hotel.room_list|join(' · ') }}</p>{% endif %}
+        <p class="library-usage">{% set used = usage.get(hotel.id, 0) %}{{ 'Used in ' ~ used ~ ' quotation' ~ ('' if used == 1 else 's') if used else 'Not used in a quotation yet' }}{% if saved_id == hotel.id %} · <b>Saved ✓</b>{% endif %}</p>
+        <a class="library-find" href="https://www.google.com/search?q={{ (hotel.name ~ ' ' ~ (hotel.location or '') ~ ' Kashmir official website')|urlencode }}" target="_blank" rel="noopener noreferrer">Find photos on the hotel's site ↗</a>
+        <details class="library-edit">
+          <summary>{{ 'Edit / change photo' if hotel.image_url else 'Edit / add photo' }}</summary>
+          <form method="post" action="/admin/hotel-library/{{ hotel.id }}" enctype="multipart/form-data" class="contact-form">
+            {{ hotel_fields(hotel) }}
+            {% if hotel.image_url %}<label class="library-check"><input type="checkbox" name="remove_photo" value="1"> Remove current photo</label>{% endif %}
+            <button class="btn" type="submit">Save</button>
+          </form>
+          <form method="post" action="/admin/hotel-library/{{ hotel.id }}/delete" class="inline-delete" onsubmit="return confirm('Remove {{ hotel.name|e }} from the hotel library? Existing quotations keep the hotel name.');"><button type="submit">Remove from library</button></form>
+        </details>
+      </div>
+    </article>
+    {% else %}
+    <p class="library-empty">{{ 'No hotels match this filter.' if total_count else 'No hotels yet — add your first one above.' }}</p>
+    {% endfor %}
+  </div>
+</div></section>
+{% endblock %}

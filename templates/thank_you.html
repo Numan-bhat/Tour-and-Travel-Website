@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block title %}Enquiry Received | Waadi Kashmir Travels{% endblock %}
+{% block meta_description %}Your Kashmir travel enquiry has been received by Waadi Kashmir Travels.{% endblock %}
+{% block robots %}noindex,nofollow{% endblock %}
+
+{% block content %}
+<section class="page-section">
+  <div class="container thank-you">
+    <h1>Thank you, {{ name }}!</h1>
+    <p>Your message has been received. We will contact you soon with travel recommendations.</p>
+    <a class="btn btn-primary" href="/">Back to Home</a>
+  </div>
+</section>
+{% endblock %}

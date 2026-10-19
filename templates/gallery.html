@@ -1,0 +1,4 @@
+{% extends "layout.html" %}
+{% block title %}Kashmir Travel Gallery | Waadi Kashmir Travels{% endblock %}
+{% block meta_description %}Browse Kashmir travel, hotel, cab and destination photos from Waadi Kashmir Travels.{% endblock %}
+{% block content %}<section class="gallery-page"><div class="container"><div class="section-intro center"><span class="section-tag">Travel Gallery</span><h1>A glimpse of Kashmir</h1><p>Scenes, stays and journeys curated by our local travel team.</p></div><div class="gallery-grid">{% for asset in assets %}<figure><img src="{{ url_for('static', filename='uploads/' ~ asset.filename) }}" alt="{{ asset.title }}" loading="lazy"><figcaption>{{ asset.title }}</figcaption></figure>{% else %}<div class="empty-state"><h2>Gallery coming soon</h2><p>Our team is selecting genuine trip photographs for this page.</p></div>{% endfor %}</div></div></section>{% endblock %}

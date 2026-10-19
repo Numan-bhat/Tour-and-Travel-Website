@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block title %}{{ "Edit Hotel" if hotel else "Add Hotel" }} | Admin{% endblock %}
+{% block content %}
+<section class="page-section"><div class="container hotel-admin-editor">
+  <div class="admin-header"><div><a href="/admin/hotels">← All hotels</a><h1>{{ "Edit Hotel" if hotel else "Add New Hotel" }}</h1></div></div>
+  {% if error %}<div class="form-error">{{ error }}</div>{% endif %}
+  <form method="post" enctype="multipart/form-data" class="contact-form hotel-admin-form"><input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <div class="hotel-admin-grid"><label>Hotel name *<input name="name" required value="{{ hotel.name if hotel else '' }}"></label><label>URL slug<input name="slug" value="{{ hotel.slug if hotel else '' }}" placeholder="created from hotel name"></label><label>Full location *<input name="location" required value="{{ hotel.location if hotel else '' }}" placeholder="Srinagar, Jammu and Kashmir"></label><label>Short location<input name="location_short" value="{{ hotel.location_short if hotel else '' }}" placeholder="Srinagar, Kashmir"></label><label>Nightly rate (₹) *<input name="price" type="number" min="0" required value="{{ hotel.price if hotel else '' }}"></label><label>Stars<select name="stars">{% for star in range(1,6) %}<option value="{{ star }}" {% if hotel and hotel.stars == star %}selected{% endif %}>{{ star }} star</option>{% endfor %}</select></label></div>
+    <label>Hotel themes<input name="theme" value="{{ hotel.theme if hotel else '' }}" placeholder="luxury romantic boutique"></label>
+    <label>Detail-page heading *<input name="intro_title" required value="{{ hotel.intro_title if hotel else '' }}"></label><label>Overview *<textarea name="overview" rows="5" required>{{ hotel.overview if hotel else '' }}</textarea></label><label>Room name *<input name="room_name" required value="{{ hotel.room_name if hotel else '' }}"></label>
+    <label>Facilities (one per line)<textarea name="facilities" rows="8" placeholder="Free Wi-Fi&#10;Restaurant&#10;Parking">{{ hotel.facility_list|join('\n') if hotel else '' }}</textarea></label>
+    <label>Primary image URL<input name="image_url" value="{{ hotel.image_url if hotel else '' }}" placeholder="/static/uploads/hotel.jpg"></label><label>Gallery image URLs (one per line)<textarea name="gallery_images" rows="7">{{ hotel.images|join('\n') if hotel else '' }}</textarea></label><label>Upload more gallery images<input name="gallery_files" type="file" accept="image/*,.avif,.jfif" multiple><small>New uploads are added to the gallery. You can select several files together.</small></label>
+    {% if hotel and hotel.images %}<div class="hotel-admin-previews">{% for image in hotel.images %}<img src="{{ image }}" alt="Gallery image {{ loop.index }}">{% endfor %}</div>{% endif %}
+    <div class="hotel-admin-checks"><label><input type="checkbox" name="featured" {% if hotel and hotel.featured %}checked{% endif %}> Featured hotel</label><label><input type="checkbox" name="active" {% if not hotel or hotel.active %}checked{% endif %}> Visible on website</label></div><button class="btn" type="submit">Save Hotel</button>
+  </form>
+</div></section>
+{% endblock %}

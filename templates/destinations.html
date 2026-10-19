@@ -1,0 +1,72 @@
+{% extends "layout.html" %}
+{% block title %}Kashmir & Ladakh Destinations | Waadi Kashmir Travels{% endblock %}
+{% block meta_description %}Explore Srinagar, Gulmarg, Pahalgam, Sonamarg, Ladakh and more with practical seasonal advice and local highlights.{% endblock %}
+
+{% block content %}
+<section class="page-hero page-hero-destinations">
+  <div class="container page-hero-inner">
+    <div class="page-hero-copy">
+      <span class="section-tag">Popular Destinations</span>
+      <h1>Discover the Most Scenic Places in Kashmir & Ladakh</h1>
+      <p>Explore iconic lakes, gardens, alpine valleys, and cultural landmarks that make every journey memorable.</p>
+      <div class="page-hero-pills">
+        <span>Dal Lake</span>
+        <span>Gulmarg</span>
+        <span>Pahalgam</span>
+      </div>
+    </div>
+    <div class="page-hero-card">
+      <h3>Travel with confidence</h3>
+      <ul>
+        <li>Expert local guidance</li>
+        <li>Perfect timing for every season</li>
+        <li>Comfort-first sightseeing plans</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="page-section">
+  <div class="container">
+    <div class="section-intro center">
+      <span class="section-tag">Popular Destinations</span>
+      <h2>Discover Kashmir & Ladakh Destinations</h2>
+      <p>Explore the most iconic destinations of Kashmir and Ladakh, from serene lakes to alpine meadows and cultural highlights.</p>
+    </div>
+
+    <div class="destinations-grid">
+      {% for dest in destinations %}
+      <article class="destination-card">
+        {% if dest.image_url %}
+        <div class="destination-image">
+          <img src="{{ dest.image_url }}" alt="{{ dest.name }}" loading="lazy" decoding="async" />
+        </div>
+        {% endif %}
+        <div class="destination-content">
+          <div class="destination-header">
+            <h3>{{ dest.name }}</h3>
+            <span class="region-badge">{{ dest.region }}</span>
+          </div>
+          <p class="destination-desc">{{ dest.description }}</p>
+          <div class="destination-info">
+            <div class="info-block">
+              <h4>Highlights</h4>
+              <ul>
+                {% for highlight in dest.highlights %}
+                <li>{{ highlight }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+            <div class="info-block info-summary">
+              <h4>Best Time</h4>
+              <p>{{ dest.best_time }}</p>
+              <p class="info-note">Ideal season for comfortable travel and clear mountain views.</p>
+            </div>
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

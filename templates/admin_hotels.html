@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% block title %}Manage Hotels | Admin{% endblock %}
+{% block content %}
+<section class="page-section"><div class="container">
+  <div class="admin-header"><div><a href="/admin">← Dashboard</a><h1>Hotel Management</h1><p>Add properties, update rates and manage hotel images.</p></div><a class="btn" href="/admin/hotels/new">Add New Hotel</a></div>
+  <div class="admin-table"><table><thead><tr><th>Image</th><th>Hotel</th><th>Location</th><th>Rate</th><th>Stars</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+  {% for hotel in hotels %}<tr><td>{% if hotel.image_url %}<img src="{{ hotel.image_url }}" alt="" style="width:90px;height:60px;object-fit:cover;border-radius:8px">{% endif %}</td><td><strong>{{ hotel.name }}</strong>{% if hotel.featured %}<br><small>Featured</small>{% endif %}</td><td>{{ hotel.location_short }}</td><td>₹{{ "{:,}".format(hotel.price) }}</td><td>{{ hotel.stars }}</td><td>{{ "Active" if hotel.active else "Hidden" }}</td><td><a href="/hotel/{{ hotel.slug }}/" target="_blank">View</a> · <a href="/admin/hotels/{{ hotel.id }}/edit">Edit</a><form action="/admin/hotels/{{ hotel.id }}/delete" method="post" style="display:inline" onsubmit="return confirm('Delete this hotel? This cannot be undone.')"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button class="admin-link-danger" type="submit">Delete</button></form></td></tr>{% else %}<tr><td colspan="7">No hotels yet.</td></tr>{% endfor %}
+  </tbody></table></div>
+</div></section>
+{% endblock %}

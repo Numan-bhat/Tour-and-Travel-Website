@@ -1,0 +1,246 @@
+{% extends "layout.html" %}
+{% block title %}{{ 'Your Kashmir trip quotation' if public else 'Quotation' }} {{ quote.quote_number }} | Waadi Kashmir Travels{% endblock %}
+{% block robots %}noindex,nofollow{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/quote.css') }}">{% endblock %}
+{% macro icon(name) %}<svg class="qp-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{% if name == 'calendar' %}<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>{% elif name == 'moon' %}<path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/>{% elif name == 'users' %}<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>{% elif name == 'bed' %}<path d="M2 4v16M2 8h18a2 2 0 0 1 2 2v10M2 17h20M6 8v9"/>{% elif name == 'car' %}<path d="M3 13l2-6h14l2 6v5H3z"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>{% elif name == 'pin' %}<path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>{% elif name == 'check' %}<path d="M20 6 9 17l-5-5"/>{% elif name == 'x' %}<path d="M18 6 6 18M6 6l12 12"/>{% elif name == 'info' %}<circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>{% elif name == 'phone' %}<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/>{% elif name == 'mail' %}<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/>{% elif name == 'shield' %}<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>{% elif name == 'clock' %}<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>{% elif name == 'meal' %}<path d="M3 2v7a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V2M7 2v20M21 15V2a5 5 0 0 0-5 5v6a2 2 0 0 0 2 2h3zm0 0v7"/>{% elif name == 'wallet' %}<path d="M20 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>{% elif name == 'doc' %}<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/>{% elif name == 'heart' %}<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/>{% endif %}</svg>{% endmacro %}
+{% macro point_list(lines, kind) %}<ul class="qp-list qp-list-{{ kind }}">{% for line in lines %}<li>{{ icon(kind) }}<span>{{ line }}</span></li>{% endfor %}</ul>{% endmacro %}
+{% block content %}
+{# The quotation is a paper document: show it in the light theme even when the viewer's device uses dark mode
+   (runs before main.js applies the theme, and is not saved as the viewer's preference). #}
+<script>document.documentElement.dataset.theme = "light";</script>
+<section class="page-section quote-print"><div class="container">
+  {% if public %}
+  <div class="admin-header no-print quote-actions quote-client-actions">
+    <p>Hello {{ quote.client_name }}, here is your personalised Kashmir trip quotation.</p>
+    <div><a class="btn quote-whatsapp" href="{{ confirm_url }}" target="_blank" rel="noopener">Confirm on WhatsApp</a><a class="btn" href="tel:{{ contact.phone|replace(' ', '') }}">Call us</a><a class="btn" href="/quote/{{ quote.share_token }}/pdf">Download PDF</a></div>
+  </div>
+  {% else %}
+  <div class="admin-header no-print quote-actions">
+    <div><a class="btn" href="/admin/quotes">All quotations</a><a class="btn" href="/admin/quotes/{{ quote.id }}/edit">Edit</a><button class="btn" type="button" onclick="window.print()">Print / Save PDF</button>
+      <form method="post" action="/admin/quotes/{{ quote.id }}/duplicate" class="inline-form"><button class="btn" type="submit">Duplicate</button></form>
+      {% if quote.trip_bookings %}<a class="btn quote-converted" href="/admin/operations">Booking created ✓</a>{% else %}<form method="post" action="/admin/quotes/{{ quote.id }}/convert" class="inline-form" onsubmit="return confirm('Create a confirmed booking from this quotation and mark it Accepted?');"><button class="btn" type="submit">Convert to booking</button></form>{% endif %}
+    </div>
+    <div><form method="post" action="/admin/quotes/{{ quote.id }}/status" class="quote-status-form"><input type="hidden" name="next" value="/admin/quotes/{{ quote.id }}"><label>Status <select name="status" onchange="this.form.submit()">{% for status in statuses %}<option{% if quote.status == status %} selected{% endif %}>{{ status }}</option>{% endfor %}</select></label><noscript><button class="btn" type="submit">Save</button></noscript></form>
+      {% if not quote.trip_bookings %}<form method="post" action="/admin/quotes/{{ quote.id }}/delete" class="inline-delete" onsubmit="return confirm('Delete this quotation? This cannot be undone.');"><button class="btn delete-quote" type="submit">Delete</button></form>{% endif %}
+    </div>
+  </div>
+  {% set blocked = hotels|selectattr('conflicts')|list %}
+  {% if blocked %}<div class="quote-availability-warning no-print" role="alert"><b>Availability warning</b>{% for hotel in blocked %}<p>{{ hotel.name }} ({{ hotel.dates }}) is blocked on {{ hotel.conflicts|join(', ') }}. <a href="/admin/quotes/{{ quote.id }}/edit">Change hotel</a> · <a href="/admin/hotel-availability">See availability</a></p>{% endfor %}</div>{% endif %}
+  <div class="quote-share no-print">
+    <div><b>Send to client</b><button class="btn quote-whatsapp" type="button" data-share-pdf="/admin/quotes/{{ quote.id }}/pdf" data-filename="Waadi-Kashmir-Quotation-{{ quote.quote_number }}.pdf" data-whatsapp="{{ whatsapp_url }}" data-message="{{ whatsapp_message }}" disabled>Preparing PDF…</button><a class="btn" href="/admin/quotes/{{ quote.id }}/pdf">Download PDF</a><a class="btn quote-btn-light" href="{{ whatsapp_url }}" target="_blank" rel="noopener">WhatsApp message only</a><a class="btn quote-btn-light" href="{{ email_url }}">Email</a>{% if not share_is_local %}<button class="btn quote-btn-light" type="button" data-copy="{{ share_url }}">Copy client link</button>{% endif %}</div>
+    <p class="quote-share-status" data-share-status hidden></p>
+    {% if share_is_local %}<p><b>You're on your computer (localhost)</b>, so the client link won't open for anyone else and isn't included in the WhatsApp message. Send the PDF instead, or send from your live website to include the link.</p>{% else %}<p>Client link: <a href="{{ share_url }}" target="_blank" rel="noopener">{{ share_url }}</a></p>{% endif %}
+    <p><small>After sending, set the status to <b>Sent</b> so it shows in follow-ups.</small></p>
+  </div>
+  {% endif %}
+
+  <article class="qp">
+    {# ---------- Cover ---------- #}
+    <header class="qp-cover">
+      <img class="qp-cover-photo" src="{{ cover_image }}" alt="">
+      <div class="qp-cover-top">
+        <img class="qp-cover-logo" src="{{ url_for('static', filename='images/waadi-kashmir-travels-logo-enhanced.webp') }}" alt="Waadi Kashmir Travels">
+        <dl class="qp-ref"><div><dt>Quotation</dt><dd>{{ quote.quote_number }}</dd></div><div><dt>Issued</dt><dd>{{ quote.created_at.strftime('%d %b %Y') }}</dd></div>{% if quote.valid_until %}<div><dt>Valid till</dt><dd>{{ quote.valid_until }}</dd></div>{% endif %}</dl>
+      </div>
+      <div class="qp-cover-body">
+        <p class="qp-eyebrow">A journey specially planned for</p>
+        <p class="qp-guest">{{ quote.client_name }}</p>
+        <h1>{{ quote.trip_name }}</h1>
+        {% if journey %}<p class="qp-cover-route">{{ journey|join('  ·  ') }}</p>{% endif %}
+      </div>
+      <div class="qp-cover-price">
+        <span>Total package price</span>
+        <strong>{{ pricing.total }}</strong>
+        <small>{% if pricing.per_person %}{{ pricing.per_person }} per person{% endif %}{% if pricing.per_person and pricing.gst %} · {% endif %}{% if pricing.gst %}inclusive of GST{% endif %}</small>
+      </div>
+    </header>
+
+    {# ---------- Trip at a glance ---------- #}
+    <section class="qp-glance" aria-label="Trip at a glance">
+      <div>{{ icon('calendar') }}<dl><dt>Travel dates</dt><dd>{{ date_range_label or 'To be confirmed' }}</dd></dl></div>
+      <div>{{ icon('moon') }}<dl><dt>Duration</dt><dd>{% if days %}{{ nights }} Nights / {{ days }} Days{% else %}To be confirmed{% endif %}</dd></dl></div>
+      <div>{{ icon('users') }}<dl><dt>Travellers</dt><dd>{{ quote.adults or quote.travelers }} Adult{{ '' if (quote.adults or quote.travelers) == 1 else 's' }}{% if quote.children %} + {{ quote.children }} Child{{ '' if quote.children == 1 else 'ren' }}{% endif %}{% if quote.rooms %} · {{ quote.rooms }} Room{{ '' if quote.rooms == 1 else 's' }}{% endif %}</dd></dl></div>
+      <div>{{ icon('car') }}<dl><dt>Transport</dt><dd>{{ transport.vehicle or 'Private cab' }}</dd></dl></div>
+    </section>
+
+    {% if journey|length > 1 %}
+    <section class="qp-journey" aria-label="Your route">
+      {% for place in journey %}<div class="qp-stop"><span>{{ icon('pin') }}</span><b>{{ place }}</b></div>{% endfor %}
+    </section>
+    {% endif %}
+
+    <section class="qp-intro">
+      <p>Dear {{ quote.client_name|title }},</p>
+      <p>Thank you for choosing <b>Waadi Kashmir Travels</b>. We are delighted to share this personalised plan for your Kashmir holiday – handpicked stays, a private vehicle and a local team in Srinagar looking after you from arrival to departure. Every detail below can be adjusted to suit you.</p>
+    </section>
+
+    {# ---------- Itinerary ---------- #}
+    {% if itinerary %}
+    <section class="qp-section qp-itinerary-section">
+      <div class="qp-heading"><span>Your journey</span><h2>Day-by-day itinerary</h2></div>
+      <ol class="qp-timeline">
+        {% for item in itinerary %}
+        <li class="qp-day">
+          <div class="qp-day-badge"><b>Day {{ '%02d'|format(loop.index) }}</b>{% if item.date %}<small>{{ item.date }}</small>{% endif %}</div>
+          <img class="qp-day-photo" src="{{ item.image }}" alt="" loading="eager">
+          <div class="qp-day-body">
+            <h3>{{ item.route or 'Kashmir sightseeing' }}</h3>
+            {% if item.plan %}<p>{{ item.plan }}</p>{% endif %}
+            {% if item.stay %}<p class="qp-day-stay">{{ icon('bed') }}Overnight at <b>{{ item.stay.name or 'hotel to be confirmed' }}</b>{% if item.stay.location %}, {{ item.stay.location }}{% endif %}{% if item.stay.meal_plan and item.stay.meal_plan != 'Room only' %} · {{ item.stay.meal_plan.split(' - ')[-1] }}{% endif %}</p>{% endif %}
+          </div>
+        </li>
+        {% endfor %}
+      </ol>
+    </section>
+    {% endif %}
+
+    {# ---------- Hotels ---------- #}
+    {% if hotels %}
+    <section class="qp-section">
+      <div class="qp-heading"><span>Where you'll stay</span><h2>Hotels & accommodation</h2></div>
+      <div class="qp-hotels">
+        {% for hotel in hotels %}
+        <article class="qp-hotel">
+          <img src="{{ hotel.image }}" alt="">
+          <div>
+            <p class="qp-hotel-place">{{ icon('pin') }}{{ hotel.location or 'Kashmir' }}{% if hotel.dates %} · {{ hotel.dates }}{% endif %}</p>
+            <h3>{{ hotel.name or 'Hotel to be confirmed' }}</h3>
+            {% if hotel.stars %}<p class="qp-stars" aria-label="{{ hotel.stars }} star hotel">{{ '★' * hotel.stars }}<span>{{ '★' * (5 - hotel.stars) }}</span></p>{% elif hotel.category %}<p class="qp-hotel-category">{{ hotel.category }}</p>{% endif %}
+            <ul class="qp-hotel-meta">
+              {% if hotel.nights %}<li>{{ icon('moon') }}{{ hotel.nights }} Night{{ '' if hotel.nights == '1' else 's' }}</li>{% endif %}
+              <li>{{ icon('bed') }}{{ hotel.room or 'Standard room' }}</li>
+              {% if hotel.meal_plan %}<li>{{ icon('meal') }}{{ hotel.meal_plan }}</li>{% endif %}
+            </ul>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+      <p class="qp-fine">Hotels are subject to availability at the time of confirmation; if unavailable, a hotel of the same category will be offered. Standard check-in 12–2 PM, check-out 11 AM–12 PM.</p>
+    </section>
+    {% endif %}
+
+    {# ---------- Transport ---------- #}
+    {% if transport %}
+    <section class="qp-section qp-transport">
+      <div class="qp-transport-icon">{{ icon('car') }}</div>
+      <div><h2>Private transport</h2><p><b>{{ transport.vehicle or 'Private cab' }}</b>{% if transport.pickup %} · Pickup: {{ transport.pickup }}{% endif %}{% if transport.drop %} · Drop: {{ transport.drop }}{% endif %}</p>{% if transport.notes %}<p>{{ transport.notes }}</p>{% else %}<p>Dedicated vehicle with an experienced local driver for all transfers and sightseeing as per the itinerary.</p>{% endif %}</div>
+    </section>
+    {% endif %}
+
+    {# ---------- Price ---------- #}
+    <section class="qp-section qp-price">
+      <div class="qp-price-head"><div><span>Package cost</span><h2>Price summary</h2></div><div class="qp-price-total"><small>Total payable</small><strong>{{ pricing.total }}</strong></div></div>
+      <table>
+        <tbody>
+          {% for line in pricing.lines %}<tr><td>{{ line.label }}</td><td>{{ line.amount }}</td></tr>{% endfor %}
+          {% if pricing.discount or pricing.gst %}<tr class="qp-sub"><td>Subtotal</td><td>{{ pricing.subtotal }}</td></tr>{% endif %}
+          {% if pricing.discount %}<tr class="qp-discount"><td>Special discount</td><td>− {{ pricing.discount }}</td></tr>{% endif %}
+          {% if pricing.gst %}<tr><td>GST @ {{ pricing.gst_percent }}%</td><td>{{ pricing.gst }}</td></tr>{% endif %}
+          <tr class="qp-grand"><td>Total payable</td><td>{{ pricing.total }}</td></tr>
+        </tbody>
+      </table>
+      <p class="qp-words">{{ pricing.total_words }}{% if pricing.per_person %} <span>·</span> {{ pricing.per_person }} per person{% endif %}</p>
+      {% if pricing.advance %}<div class="qp-pay"><div>{{ icon('wallet') }}<span>Advance to confirm ({{ pricing.advance_percent }}%)</span><strong>{{ pricing.advance }}</strong></div><div>{{ icon('clock') }}<span>Balance before arrival</span><strong>{{ pricing.balance }}</strong></div></div>{% endif %}
+    </section>
+
+    {# ---------- Inclusions / exclusions ---------- #}
+    <section class="qp-section qp-inc-exc">
+      <div class="qp-inc"><h2>{{ icon('check') }}What's included</h2>{% if inclusions %}{{ point_list(inclusions, 'check') }}{% else %}<p>To be confirmed with you.</p>{% endif %}</div>
+      {% if quote.exclusions %}<div class="qp-exc"><h2>{{ icon('x') }}Not included</h2>{{ point_list(quote.exclusions.splitlines()|map('trim')|reject('equalto', '')|list, 'x') }}</div>{% endif %}
+    </section>
+
+    {% if quote.travel_info %}
+    <section class="qp-section qp-travel-info">
+      <div class="qp-heading"><span>Before you travel</span><h2>Important travel information</h2></div>
+      {{ point_list(quote.travel_info.splitlines()|map('trim')|reject('equalto', '')|list, 'info') }}
+    </section>
+    {% endif %}
+
+    {% if quote.notes %}<section class="qp-section qp-note"><h2>Notes for your trip</h2><p>{{ quote.notes }}</p></section>{% endif %}
+
+    {# ---------- Terms ---------- #}
+    <section class="qp-section qp-terms">
+      {% if quote.payment_terms or quote.bank_details %}
+      <div>
+        {% if quote.payment_terms %}<h2>{{ icon('wallet') }}Payment terms</h2>{{ point_list(quote.payment_terms.splitlines()|map('trim')|reject('equalto', '')|list, 'dot') }}{% endif %}
+        {% if quote.bank_details %}<div class="qp-bank"><b>Bank / UPI details</b><p>{{ quote.bank_details }}</p></div>{% endif %}
+      </div>
+      {% endif %}
+      {% if quote.cancellation_policy %}<div><h2>{{ icon('doc') }}Cancellation policy</h2>{{ point_list(quote.cancellation_policy.splitlines()|map('trim')|reject('equalto', '')|list, 'dot') }}</div>{% endif %}
+    </section>
+
+    {# ---------- Why us + contact ---------- #}
+    <section class="qp-why">
+      <h2>Why travel with Waadi Kashmir Travels</h2>
+      <div>
+        <p>{{ icon('pin') }}<b>Local Srinagar team</b><span>Born and based in the valley</span></p>
+        <p>{{ icon('clock') }}<b>24×7 on-trip support</b><span>One call away, every day</span></p>
+        <p>{{ icon('shield') }}<b>Verified stays & cabs</b><span>Handpicked and checked by us</span></p>
+        <p>{{ icon('heart') }}<b>Tailor-made plans</b><span>Your pace, your choices</span></p>
+      </div>
+    </section>
+    <footer class="qp-footer">
+      <div class="qp-footer-brand"><img src="{{ url_for('static', filename='images/waadi-kashmir-travels-logo-enhanced.webp') }}" alt="Waadi Kashmir Travels"><p>{% if quote.valid_until %}This quotation is valid until <b>{{ quote.valid_until }}</b>.{% else %}Prices are subject to availability at the time of booking.{% endif %} We look forward to welcoming you to Kashmir.</p></div>
+      <ul>
+        <li>{{ icon('phone') }}{{ contact.phone }}</li>
+        <li>{{ icon('mail') }}{{ contact.email }}</li>
+        <li>{{ icon('pin') }}{{ contact.address }}</li>
+      </ul>
+    </footer>
+  </article>
+</div></section>
+{% if public %}<script>
+// Reached here because the server could not build a PDF: open the browser's own "Save as PDF" dialog instead.
+if (new URLSearchParams(location.search).has("print")) window.addEventListener("load", () => setTimeout(() => window.print(), 600));
+</script>{% else %}<script>
+document.querySelectorAll("[data-copy]").forEach((button) => button.addEventListener("click", async () => {
+  try { await navigator.clipboard.writeText(button.dataset.copy); button.textContent = "Link copied ✓"; }
+  catch { window.prompt("Copy this link", button.dataset.copy); }
+}));
+
+// WhatsApp's chat links can only carry text, so the PDF is shared as a file through the device's share sheet
+// (phones, and Windows/Mac with the WhatsApp app). The PDF is prepared on page load because browsers only allow
+// sharing straight after a click, not after a slow download.
+(() => {
+  const button = document.querySelector("[data-share-pdf]");
+  const status = document.querySelector("[data-share-status]");
+  if (!button) return;
+  const say = (message) => { status.hidden = false; status.textContent = message; };
+  let pdfFile = null;
+  fetch(button.dataset.sharePdf, { credentials: "same-origin" })
+    .then((response) => {
+      if (!response.ok || !(response.headers.get("Content-Type") || "").includes("pdf")) throw new Error("no pdf");
+      return response.blob();
+    })
+    .then((blob) => {
+      pdfFile = new File([blob], button.dataset.filename, { type: "application/pdf" });
+      button.disabled = false;
+      button.textContent = "Share PDF on WhatsApp";
+    })
+    .catch(() => {
+      button.disabled = false;
+      button.textContent = "Save PDF (print)";
+      say("This server can't create PDF files, so this button opens Print. Choose \"Save as PDF\", then attach the file in WhatsApp.");
+    });
+
+  button.addEventListener("click", async () => {
+    if (!pdfFile) { window.print(); return; }
+    if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+      try {
+        await navigator.share({ files: [pdfFile], text: button.dataset.message });
+        say("Shared ✓ Set the status to Sent once it has gone.");
+        return;
+      } catch (error) {
+        if (error.name === "AbortError") return;
+      }
+    }
+    // No file sharing here: download the PDF and open the client's chat, ready for the file to be attached.
+    const link = Object.assign(document.createElement("a"), { href: URL.createObjectURL(pdfFile), download: pdfFile.name });
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(link.href), 10000);
+    window.open(button.dataset.whatsapp, "_blank", "noopener");
+    say("PDF downloaded. In the WhatsApp chat that opened, click 📎 → Document and choose " + pdfFile.name + " from your Downloads, then send.");
+  });
+})();
+</script>{% endif %}
+{% endblock %}

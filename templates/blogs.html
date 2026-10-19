@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block title %}Kashmir Travel Guides | Waadi Kashmir Travels{% endblock %}
+{% block meta_description %}Read local Kashmir planning guides covering cabs, seasons, destinations, family trips and practical booking advice.{% endblock %}
+{% block content %}
+<section class="waadi-blog-archive">
+  <header class="container waadi-blog-heading">
+    <span class="reference-eyebrow">Local travel journal</span>
+    <h1>Kashmir travel guides and stories</h1>
+    <p>Practical local advice, destination inspiration, food guides and planning tips for a smoother Kashmir journey.</p>
+  </header>
+  <div class="container waadi-blog-layout">
+    <div class="blog-feed" id="blogFeed">
+      {% for blog in blogs %}
+      <article class="reference-blog-card waadi-blog-card" data-search="{{ blog.title|lower }} {{ blog.excerpt|lower }} {{ blog.category|lower }}">
+        <a class="reference-blog-image" href="{{ url_for('blog_detail', slug=blog.slug) }}"><img src="{{ blog.image_url }}" alt="{{ blog.title }}" loading="lazy" decoding="async"></a>
+        <div class="waadi-blog-card-content">
+          <div class="reference-blog-category"><span></span>{{ blog.category }}</div>
+          <div class="reference-blog-content"><h2><a href="{{ url_for('blog_detail', slug=blog.slug) }}">{{ blog.title }}</a></h2><p>{{ blog.excerpt }}</p><div class="reference-blog-meta"><span class="author-avatar" aria-hidden="true">WK</span><span><b>BY</b> {{ blog.author or 'Waadi Kashmir Travels' }}</span><span>{{ blog.date }}</span></div></div>
+        </div>
+      </article>
+      {% endfor %}
+      <p class="blog-no-results" id="blogNoResults" hidden>No articles match your search.</p>
+    </div>
+    <aside class="reference-blog-sidebar waadi-blog-sidebar">
+      <section class="waadi-sidebar-panel waadi-search-panel"><form class="blog-search" id="blogSearchForm"><label for="blogSearch">Search articles</label><div><input id="blogSearch" type="search" placeholder="Search ..." autocomplete="off"><button type="submit" aria-label="Search">⌕</button></div></form></section>
+      <section class="waadi-sidebar-panel blog-tags"><h2>Tags</h2><div>{% for category in categories if category != 'All' %}<button type="button" data-tag="{{ category|lower }}">{{ category }}</button>{% endfor %}<button type="button" data-tag="kashmir">Kashmir travel</button><button type="button" data-tag="cab">Cab service</button><button type="button" data-tag="family">Family tours</button><button type="button" data-tag="srinagar">Srinagar</button><button type="button" data-tag="gulmarg">Gulmarg</button><button type="button" data-tag="pahalgam">Pahalgam</button></div></section>
+    </aside>
+  </div>
+</section>
+{% endblock %}

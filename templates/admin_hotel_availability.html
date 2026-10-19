@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+{% block robots %}noindex,nofollow{% endblock %}
+{% block content %}
+<section class="page-section"><div class="container">
+  <div class="admin-header"><div><a href="/admin">← Dashboard</a><h1>Hotel Availability</h1><p>Block dates when a hotel is sold out or closed. Website hotels stop accepting enquiries on those dates; quotations warn you if a stay falls on blocked dates.</p></div><div><a class="btn" href="/admin/hotel-library">Hotel library</a></div></div>
+  <form method="post" class="contact-form hotel-admin-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <div class="hotel-admin-grid">
+      <label>Hotel<select name="hotel" required>
+        <option value="">Choose a hotel…</option>
+        <optgroup label="Website hotels">{% for hotel in hotels %}<option value="site:{{ hotel.id }}">{{ hotel.name }} — {{ hotel.location_short.split(',')[0] }}</option>{% endfor %}</optgroup>
+        {% for location, group in library_by_location %}<optgroup label="{{ location }}">{% for hotel in group %}<option value="library:{{ hotel.id }}">{{ hotel.name }}{% if hotel.category %} ({{ hotel.category }}){% endif %}</option>{% endfor %}</optgroup>{% endfor %}
+      </select></label>
+      <label>Start date<input type="date" name="start_date" required min="{{ today }}"></label>
+      <label>End date<input type="date" name="end_date" required min="{{ today }}"></label>
+      <label>Note<input name="note" placeholder="Sold out / maintenance"></label>
+    </div>
+    <button class="btn">Block Dates</button>
+  </form>
+  <div class="admin-table"><table><thead><tr><th>Hotel</th><th>Dates</th><th>Note</th><th></th></tr></thead><tbody>
+    {% for block in blocks %}<tr{% if block.end < today %} class="availability-past"{% endif %}><td>{{ block.hotel }}<br><small>{{ block.location }}{{ ' · website hotel' if block.kind == 'site' else '' }}</small></td><td>{{ block.start }} → {{ block.end }}{% if block.end < today %}<br><small>Past</small>{% endif %}</td><td>{{ block.note or '—' }}</td><td><form method="post" action="/admin/hotel-availability/{{ block.id }}/delete"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input type="hidden" name="kind" value="{{ block.kind }}"><button class="admin-link-danger">Remove</button></form></td></tr>
+    {% else %}<tr><td colspan="4">No blocked dates.</td></tr>{% endfor %}
+  </tbody></table></div>
+</div></section>
+{% endblock %}

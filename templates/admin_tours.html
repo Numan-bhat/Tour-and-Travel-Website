@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<section class="page-section">
+  <div class="container">
+    <div class="admin-header">
+      <h1>Admin: Tour Management</h1>
+      <a class="btn" href="/admin/tours/new">Add New Tour</a>
+    </div>
+    <div class="admin-table">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Image</th>
+            <th>Title</th>
+            <th>Duration</th>
+            <th>Price</th>
+            <th>Active</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for tour in tours %}
+          <tr>
+            <td>{{ tour.id }}</td>
+            <td>
+              {% if tour.image_url %}
+              <img src="{{ tour.image_url }}" alt="{{ tour.title }}" style="width: 80px; height: 56px; object-fit: cover; border-radius: 8px;" />
+              {% else %}
+              <span>No image</span>
+              {% endif %}
+            </td>
+            <td>{{ tour.title }}</td>
+            <td>{{ tour.duration }}</td>
+            <td>{{ tour.price }}</td>
+            <td>{{ "Yes" if tour.active else "No" }}</td>
+            <td>
+              <a href="/admin/tours/{{ tour.id }}/edit">Edit</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+{% endblock %}

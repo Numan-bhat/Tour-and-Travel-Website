@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+{% block title %}Request {{ tour.title }} | Waadi Kashmir Travels{% endblock %}
+{% block meta_description %}Request {{ tour.title }} for your preferred dates and group size. Our local Kashmir team will confirm availability and prepare a written quotation.{% endblock %}
+{% block robots %}noindex,follow{% endblock %}
+
+{% block content %}
+<section class="page-section">
+  <div class="container contact-page">
+    <div class="contact-left">
+      <div class="section-intro">
+        <span class="section-tag">Book Now</span>
+        <h1>Request {{ tour.title }}</h1>
+        <p>Share your details and our travel team will confirm availability and send a written quotation before any booking is final.</p>
+      </div>
+      <form action="" method="post" class="contact-form">
+        <label class="hp-field" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off" /></label>
+        <label for="name">Full Name</label>
+        <input id="name" name="name" type="text" placeholder="Your full name" required />
+
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" placeholder="you@example.com" required />
+
+        <label for="travelers">Travelers</label>
+        <input id="travelers" name="travelers" type="number" min="1" value="1" required />
+
+        <label for="notes">Special Requests</label>
+        <textarea id="notes" name="notes" rows="4" placeholder="Any requests or questions"></textarea>
+
+        <button class="btn btn-primary" type="submit">Send booking request</button>
+        <p class="booking-policy-note">Submitting this form does not confirm a booking or take payment. We will first send availability, inclusions, exclusions, price, payment schedule and cancellation terms in writing.</p>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}
