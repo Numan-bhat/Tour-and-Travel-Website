@@ -55,6 +55,39 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["ADMIN_USERNAME"] = os.environ.get("ADMIN_USERNAME", "waadiadmin")
 app.config["ADMIN_PASSWORD"] = os.environ.get("ADMIN_PASSWORD", "admin@123")
 app.config["UPLOAD_FOLDER"] = os.path.join(app.root_path, "static", "uploads")
+
+
+def use_persistent_uploads(persistent_dir):
+    """Keep admin uploads on a mounted volume (e.g. Railway) so redeploys don't wipe them.
+
+    Photos bundled with the code are copied onto the volume once, then static/uploads is
+    replaced by a link to it, so every existing /static/uploads/... URL keeps working.
+    """
+    bundled_dir = app.config["UPLOAD_FOLDER"]
+    if os.path.realpath(bundled_dir) == os.path.realpath(persistent_dir):
+        return
+    set_aside = bundled_dir + ".bundled"
+    try:
+        os.makedirs(persistent_dir, exist_ok=True)
+        if os.path.islink(bundled_dir):
+            os.unlink(bundled_dir)
+        elif os.path.isdir(bundled_dir):
+            for name in os.listdir(bundled_dir):
+                target = os.path.join(persistent_dir, name)
+                if os.path.isfile(os.path.join(bundled_dir, name)) and not os.path.exists(target):
+                    shutil.copy2(os.path.join(bundled_dir, name), target)
+            shutil.rmtree(set_aside, ignore_errors=True)
+            os.rename(bundled_dir, set_aside)
+        os.symlink(persistent_dir, bundled_dir, target_is_directory=True)
+        shutil.rmtree(set_aside, ignore_errors=True)
+    except OSError:
+        app.logger.exception("Could not use %s for uploads; falling back to static/uploads", persistent_dir)
+        if not os.path.exists(bundled_dir) and os.path.isdir(set_aside):
+            os.rename(set_aside, bundled_dir)
+
+
+if os.environ.get("UPLOAD_DIR", "").strip():
+    use_persistent_uploads(os.environ["UPLOAD_DIR"].strip())
 # SVG is intentionally excluded: it can embed JavaScript and, served same-origin
 # from /static/uploads, would be a stored-XSS vector if opened directly.
 app.config["ALLOWED_EXTENSIONS"] = {"png", "jpg", "jpeg", "jfif", "gif", "webp", "avif"}
