@@ -34,8 +34,14 @@
   <body class="ws{% block body_class %}{% endblock %}">
     {% if request.path == '/' %}
     <div class="ws-welcome" id="welcome" role="dialog" aria-modal="true" aria-label="Welcome to Waadi Kashmir Travels">
-      <img class="ws-welcome-fill" src="{{ url_for('static', filename='images/welcome-kashmir.webp') }}" alt="" aria-hidden="true">
-      <img class="ws-welcome-art" src="{{ url_for('static', filename='images/welcome-kashmir.webp') }}" alt="Waadi Kashmir Travels — Kashmir, where heaven finds you. Discover the beauty. Experience the culture. Feel at home." fetchpriority="high">
+      <img class="ws-welcome-photo" src="{{ url_for('static', filename='images/welcome-kashmir.webp') }}" alt="" fetchpriority="high">
+      <div class="ws-welcome-text">
+        <p class="ws-welcome-brand"><span></span>Waadi Kashmir Travels<span></span></p>
+        <p class="ws-welcome-title">Kashmir</p>
+        <p class="ws-welcome-sub">Where Heaven Finds You.</p>
+        <p class="ws-welcome-lead"><span>Discover the beauty.</span> <span>Experience the culture.</span><br><span>Feel at home.</span></p>
+      </div>
+      <p class="ws-welcome-foot"><span></span>Your journey to paradise begins here<span></span></p>
       <button type="button" class="ws-welcome-enter" data-welcome-close>Enter <span aria-hidden="true">›</span></button>
       <span class="ws-welcome-bar" aria-hidden="true"><i></i></span>
     </div>
