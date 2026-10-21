@@ -32,6 +32,15 @@
     {% block structured_data %}{% endblock %}
   </head>
   <body class="ws{% block body_class %}{% endblock %}">
+    {% if request.path == '/' %}
+    <div class="ws-welcome" id="welcome" role="dialog" aria-modal="true" aria-label="Welcome to Waadi Kashmir Travels">
+      <img class="ws-welcome-fill" src="{{ url_for('static', filename='images/welcome-kashmir.webp') }}" alt="" aria-hidden="true">
+      <img class="ws-welcome-art" src="{{ url_for('static', filename='images/welcome-kashmir.webp') }}" alt="Waadi Kashmir Travels — Kashmir, where heaven finds you. Discover the beauty. Experience the culture. Feel at home." fetchpriority="high">
+      <button type="button" class="ws-welcome-enter" data-welcome-close>Enter <span aria-hidden="true">›</span></button>
+      <span class="ws-welcome-bar" aria-hidden="true"><i></i></span>
+    </div>
+    <script>try { if (sessionStorage.getItem("wkWelcomeSeen")) document.getElementById("welcome").remove(); else document.documentElement.classList.add("ws-welcome-open"); } catch (e) { document.documentElement.classList.add("ws-welcome-open"); }</script>
+    {% endif %}
     <a class="ws-skip" href="#main-content">Skip to main content</a>
 
     <div class="ws-topbar">

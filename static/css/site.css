@@ -938,3 +938,18 @@ a.ws-contact-row:hover { border-color: var(--violet); }
   .ws-trek-count { margin-left: 0; }
   .ws-trek-form { padding: 1.1rem; }
 }
+
+/* ---------- Welcome screen (home page, first view per session) ---------- */
+.ws-welcome-open, .ws-welcome-open body { overflow: hidden; }
+.ws-welcome { position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; overflow: hidden; background: #060409; cursor: pointer; transition: opacity .9s ease, visibility .9s; }
+.ws-welcome.is-leaving { opacity: 0; visibility: hidden; pointer-events: none; }
+.ws-welcome-fill { position: absolute; inset: -40px; width: calc(100% + 80px); height: calc(100% + 80px); object-fit: cover; filter: blur(28px) brightness(.45) saturate(1.2); }
+.ws-welcome-art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; animation: wsWelcomeZoom 5s ease-out both; }
+.ws-welcome-enter { position: absolute; top: 1.4rem; right: 1.4rem; display: inline-flex; align-items: center; gap: .45rem; min-height: 44px; padding: .6rem 1.2rem; border: 1px solid rgba(227,200,143,.6); border-radius: 99px; background: rgba(6,4,9,.45); color: var(--gold-2); font: 700 .78rem/1 var(--display); letter-spacing: .18em; text-transform: uppercase; cursor: pointer; backdrop-filter: blur(6px); transition: background .2s, color .2s; }
+.ws-welcome-enter:hover, .ws-welcome-enter:focus-visible { background: var(--gold); color: var(--ink); }
+.ws-welcome-bar { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: rgba(255,255,255,.08); }
+.ws-welcome-bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--gold-ink), var(--gold-2)); transform-origin: left; animation: wsWelcomeBar 4.5s linear both; }
+@keyframes wsWelcomeZoom { from { transform: scale(1.06); opacity: 0; } 18% { opacity: 1; } to { transform: scale(1); opacity: 1; } }
+@keyframes wsWelcomeBar { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@media (max-width: 760px) { .ws-welcome-enter { top: auto; right: 50%; bottom: 2rem; transform: translateX(50%); } }
+@media (prefers-reduced-motion: reduce) { .ws-welcome-art, .ws-welcome-bar i { animation: none; } .ws-welcome { transition: none; } }

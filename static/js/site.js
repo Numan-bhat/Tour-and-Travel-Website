@@ -7,6 +7,25 @@
   onScroll();
   window.addEventListener("scroll", onScroll, { passive: true });
 
+  // Welcome screen (home page, once per browser session)
+  const welcome = document.getElementById("welcome");
+  if (welcome) {
+    try { sessionStorage.setItem("wkWelcomeSeen", "1"); } catch (e) { /* private mode: show again next time */ }
+    let closed = false;
+    const close = () => {
+      if (closed) return;
+      closed = true;
+      welcome.classList.add("is-leaving");
+      document.documentElement.classList.remove("ws-welcome-open");
+      setTimeout(() => welcome.remove(), reduceMotion ? 0 : 900);
+      ["wheel", "touchmove", "keydown"].forEach((type) => window.removeEventListener(type, close));
+    };
+    welcome.querySelector("[data-welcome-close]")?.focus({ preventScroll: true });
+    welcome.addEventListener("click", close);
+    ["wheel", "touchmove", "keydown"].forEach((type) => window.addEventListener(type, close, { passive: true }));
+    setTimeout(close, 4500);
+  }
+
   // Hero slider
   const hero = document.querySelector("[data-slider]");
   if (hero) {
