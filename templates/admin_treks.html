@@ -1,0 +1,65 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<section class="page-section">
+  <div class="container">
+    <div class="admin-header">
+      <h1>Admin: Treks &amp; Wildlife</h1>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <a class="btn" href="/treks" target="_blank" rel="noopener">View treks page ↗</a>
+        <a class="btn" href="/admin/treks/new">Add New Trek</a>
+      </div>
+    </div>
+    <p style="margin-bottom:16px;">Lower "Order" numbers show first. Featured treks also appear in the "Featured treks" row at the top of the page (first three).</p>
+    <div class="admin-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Order</th>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Difficulty</th>
+            <th>Duration</th>
+            <th>Price</th>
+            <th>Featured</th>
+            <th>Active</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for trek in treks %}
+          <tr>
+            <td>{{ trek.sort_order }}</td>
+            <td>
+              {% if trek.image_url %}
+              <img src="{{ trek.image_url }}" alt="{{ trek.name }}" style="width: 80px; height: 56px; object-fit: cover; border-radius: 8px;" />
+              {% else %}
+              <span>No image</span>
+              {% endif %}
+            </td>
+            <td>{{ trek.name }}</td>
+            <td>{{ kinds.get(trek.kind, 'Trek') }}</td>
+            <td>{{ trek.difficulty }}</td>
+            <td>{{ trek.duration or '—' }}</td>
+            <td>{{ trek.price or 'On request' }}</td>
+            <td>{{ "Yes" if trek.featured else "No" }}</td>
+            <td>{{ "Yes" if trek.active else "No" }}</td>
+            <td style="white-space:nowrap;">
+              <a href="/admin/treks/{{ trek.id }}/edit">Edit</a> ·
+              <a href="{{ url_for('trek_detail', slug=trek.slug) }}" target="_blank" rel="noopener">View</a>
+              <form action="/admin/treks/{{ trek.id }}/delete" method="post" style="display:inline;" onsubmit="return confirm('Delete {{ trek.name|e }}? This cannot be undone.');">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                · <button type="submit" style="border:0; background:none; color:#b42318; cursor:pointer; padding:0; font:inherit;">Delete</button>
+              </form>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="10">No treks yet. <a href="/admin/treks/new">Add the first one</a>.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,137 @@
+{% extends "site.html" %}
+{% block title %}{{ trek.name }} | Waadi Kashmir Travels{% endblock %}
+{% block meta_description %}{{ (trek.description or trek.subtitle or trek.name)|striptags|truncate(155) }}{% endblock %}
+
+{% block content %}
+{% set highlights = trek.highlights|from_json %}
+{% set includes = trek.includes|from_json %}
+{% set itinerary = trek.itinerary|from_json %}
+{% set wa_text = 'Hello Waadi Kashmir Travels, I am interested in the ' ~ trek.name ~ '. Please share available dates and pricing. ' ~ request.url %}
+{% set wa_url = 'https://api.whatsapp.com/send/?phone=' ~ contact.whatsapp ~ '&text=' ~ (wa_text|urlencode) ~ '&type=phone_number&app_absent=0' %}
+
+<section class="ws-tour-hero">
+  {% if trek.image_url %}<img src="{{ trek.image_url }}" alt="{{ trek.name }}" fetchpriority="high">{% endif %}
+  <div class="ws-wrap">
+    <nav class="ws-crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>›</span><a href="/treks">Treks</a><span>›</span><span>{{ kinds.get(trek.kind, 'Trek') }}</span></nav>
+    <p class="ws-kicker"><span></span>{{ trek.start_point or 'Kashmir' }} · {{ kinds.get(trek.kind, 'Trek') }}</p>
+    <h1>{{ trek.name }}</h1>
+    {% if trek.subtitle %}<p class="ws-hero-lead">{{ trek.subtitle }}</p>{% endif %}
+    <div class="ws-hero-actions"><a class="ws-btn ws-btn-gold" href="#enquire">Enquire about this {{ 'trip' if trek.kind == 'wildlife' else 'trek' }}</a>{% if itinerary %}<a class="ws-btn ws-btn-line" href="#itinerary">Day by day ↓</a>{% endif %}</div>
+  </div>
+</section>
+
+<div class="ws-wrap">
+  <div class="ws-card ws-facts ws-trek-facts">
+    <div><small>Difficulty</small><strong><span class="ws-level is-{{ trek.difficulty|lower }}">{{ trek.difficulty }}</span></strong></div>
+    <div><small>Duration</small><strong>{{ trek.duration or '—' }}</strong></div>
+    <div><small>Max altitude</small><strong>{{ trek.max_altitude or '—' }}</strong></div>
+    <div><small>Distance</small><strong>{{ trek.distance or '—' }}</strong></div>
+    <div><small>Best season</small><strong>{{ trek.best_season or 'Ask us' }}</strong></div>
+    <a href="#enquire">Enquire <span aria-hidden="true">→</span></a>
+  </div>
+</div>
+
+<section class="ws-section">
+  <div class="ws-wrap ws-detail">
+    <div class="ws-detail-main">
+      <section>
+        <p class="ws-eyebrow dark">Overview</p>
+        <h2>{{ trek.subtitle or trek.name }}</h2>
+        {% if trek.description %}<p>{{ trek.description }}</p>{% endif %}
+        <p>Starts from {{ trek.start_point or 'Srinagar' }}. We run it privately for your group on dates that suit you, and can join it to a Srinagar, Pahalgam or Sonamarg stay.</p>
+      </section>
+
+      {% if highlights %}
+      <section>
+        <p class="ws-eyebrow dark">What you will see</p>
+        <h2>Highlights</h2>
+        <div class="ws-checks">{% for item in highlights %}<span><b>✓</b>{{ item }}</span>{% endfor %}</div>
+      </section>
+      {% endif %}
+
+      {% if itinerary %}
+      <section id="itinerary">
+        <p class="ws-eyebrow dark">Day by day</p>
+        <h2>Trek itinerary</h2>
+        <div class="ws-itinerary">
+          {% for item in itinerary %}
+          <details {% if loop.first %}open{% endif %}>
+            <summary><span>Day {{ item.day }}</span><strong>{{ item.title or 'On the trail' }}</strong><i aria-hidden="true">+</i></summary>
+            <p>{{ item.plan or 'Detailed plan to be confirmed.' }}</p>
+          </details>
+          {% endfor %}
+        </div>
+        <p class="ws-note">Camps and walking times can change with weather, river levels and the fitness of the group. Your guide makes the final call on the trail.</p>
+      </section>
+      {% endif %}
+
+      <section>
+        <p class="ws-eyebrow dark">Know before you book</p>
+        <h2>Included &amp; fitness</h2>
+        <div class="ws-terms">
+          {% if includes %}<article><h3>What’s included</h3><ul>{% for item in includes %}<li>{{ item }}</li>{% endfor %}</ul></article>{% endif %}
+          <article class="out"><h3>Not included</h3><ul><li>Personal trekking gear and shoes</li><li>Travel insurance</li><li>Pony or porter for personal bags (on request)</li><li>Anything not listed as included</li></ul></article>
+        </div>
+        {% if trek.fitness_note %}<div class="ws-trek-fitness"><span class="ws-level is-{{ trek.difficulty|lower }}">{{ trek.difficulty }}</span><p>{{ trek.fitness_note }}</p></div>{% endif %}
+        <p class="ws-note">Carry original photo ID — army checkposts on border-area routes check every trekker. Your written quotation confirms the exact inclusions, group size, price and cancellation terms.</p>
+      </section>
+
+      <section id="enquire">
+        <p class="ws-eyebrow dark">Book this {{ 'trip' if trek.kind == 'wildlife' else 'trek' }}</p>
+        <h2>Send us your dates</h2>
+        <form action="/contact" method="post" class="ws-card ws-form ws-trek-form">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <input type="hidden" name="service" value="{{ kinds.get(trek.kind, 'Trek') }}: {{ trek.name }}">
+          <input type="hidden" name="duration" value="{{ trek.duration or '' }}">
+          <label><b>Full name <i>*</i></b><input name="name" required autocomplete="name" placeholder="Your full name"></label>
+          <div class="ws-form-grid">
+            <label><b>Email <i>*</i></b><input name="email" type="email" required autocomplete="email" placeholder="you@example.com"></label>
+            <label><b>Phone / WhatsApp <i>*</i></b><input name="phone" type="tel" required autocomplete="tel" placeholder="{{ contact.phone }}"></label>
+            <label>Number of trekkers<input name="guests" type="number" min="1" max="50" placeholder="e.g. 4"></label>
+            <label>Preferred start date<input name="arrival_date" type="date"></label>
+          </div>
+          <label><b>Anything we should know? <i>*</i></b><textarea name="message" rows="3" required>I'd like to book the {{ trek.name }}.</textarea></label>
+          <div class="ws-honeypot" aria-hidden="true"><label>Leave this field empty<input name="website" tabindex="-1" autocomplete="off"></label></div>
+          <div class="ws-form-actions">
+            <button class="ws-btn ws-btn-violet" type="submit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l18-8-8 18-2-8z"/></svg>Send enquiry</button>
+            <a class="ws-btn ws-btn-green" href="{{ wa_url }}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1.3-4A8.5 8.5 0 1 1 8 18.7z"/></svg>WhatsApp</a>
+          </div>
+          <small class="ws-form-note">No payment is taken until you confirm your quotation in writing.</small>
+        </form>
+      </section>
+    </div>
+
+    <aside class="ws-aside">
+      <p class="ws-eyebrow">{{ kinds.get(trek.kind, 'Trek') }} · {{ trek.duration or 'Flexible' }}</p>
+      <h2>Ready to go?</h2>
+      <p>Tell us your dates and group size. We’ll confirm guides, camps and transfers in a written quotation.</p>
+      <div class="ws-aside-price"><small>{% if trek.price %}Starting from{% else %}Price{% endif %}</small><strong>{{ trek.price or 'On request' }}</strong><span>Depends on group size and dates</span></div>
+      <a class="ws-btn ws-btn-gold" href="#enquire">Enquire now <span aria-hidden="true">→</span></a>
+      <a class="ws-btn ws-btn-green" target="_blank" rel="noopener" href="{{ wa_url }}">Ask on WhatsApp</a>
+      <ul><li>✓ Local Kashmiri guides</li><li>✓ Camping, meals and permits arranged</li><li>✓ Transfers from Srinagar</li></ul>
+      <p class="ws-aside-note">No booking is final until availability and terms are confirmed in writing.</p>
+    </aside>
+  </div>
+</section>
+
+{% if related %}
+<section class="ws-section ws-mist">
+  <div class="ws-wrap">
+    <div class="ws-head-row"><div><p class="ws-tag">Keep exploring</p><h2 class="ws-title">More {{ 'wildlife trips' if trek.kind == 'wildlife' else 'treks' }}</h2></div><a class="ws-link" href="/treks#all-treks">See all →</a></div>
+    <div class="ws-trek-grid">
+      {% for item in related %}
+      <article class="ws-trek">
+        <a class="ws-trek-img" href="{{ url_for('trek_detail', slug=item.slug) }}" tabindex="-1" aria-hidden="true"><img src="{{ item.image_url or url_for('static', filename='images/waadi-kashmir-travels-logo-enhanced.webp') }}" alt="" loading="lazy" decoding="async">{% if item.tag %}<span class="ws-trek-tag">{{ item.tag }}</span>{% endif %}</a>
+        <div class="ws-trek-body">
+          <h3><a href="{{ url_for('trek_detail', slug=item.slug) }}">{{ item.name }}</a></h3>
+          {% if item.subtitle %}<p class="ws-trek-sub">{{ item.subtitle }}</p>{% endif %}
+          <div class="ws-trek-chips"><span class="ws-level is-{{ item.difficulty|lower }}">{{ item.difficulty }}</span>{% if item.duration %}<span>{{ item.duration }}</span>{% endif %}{% if item.max_altitude %}<span>{{ item.max_altitude }}</span>{% endif %}</div>
+          <div class="ws-trek-foot"><div><small>{% if item.price %}Starting from{% else %}Price{% endif %}</small><strong>{{ item.price or 'On request' }}</strong></div><a class="ws-chip-btn" href="{{ url_for('trek_detail', slug=item.slug) }}">Details</a></div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

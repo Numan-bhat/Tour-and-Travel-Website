@@ -38,7 +38,7 @@
   <body class="travel-site">
     <a class="skip-link" href="#main-content">Skip to main content</a>
     {% if request.path.startswith('/admin') %}
-    <header class="admin-global-header"><a class="admin-global-brand" href="/admin" aria-label="Waadi Kashmir admin home"><img src="{{ url_for('static', filename='images/waadi-kashmir-header-logo-v2.webp') }}" alt="Waadi Kashmir Travels"><span>TRAVEL DESK</span></a><nav aria-label="Admin navigation"><a href="/admin/crm">Guests</a><a href="/admin/quotes">Proposals</a><a href="/admin/hotel-library">Hotel library</a><a href="/admin/operations">Operations</a><a href="/admin/tours">Packages</a></nav><a class="admin-open-site" href="/" target="_blank" rel="noopener">View website <span aria-hidden="true">↗</span></a></header>
+    <header class="admin-global-header"><a class="admin-global-brand" href="/admin" aria-label="Waadi Kashmir admin home"><img src="{{ url_for('static', filename='images/waadi-kashmir-header-logo-v2.webp') }}" alt="Waadi Kashmir Travels"><span>TRAVEL DESK</span></a><nav aria-label="Admin navigation"><a href="/admin/crm">Guests</a><a href="/admin/quotes">Proposals</a><a href="/admin/hotel-library">Hotel library</a><a href="/admin/operations">Operations</a><a href="/admin/tours">Packages</a><a href="/admin/treks">Treks</a></nav><a class="admin-open-site" href="/" target="_blank" rel="noopener">View website <span aria-hidden="true">↗</span></a></header>
     {% else %}
     <header class="reference-header site-header{% if request.endpoint == 'home' %} site-header-overlay{% endif %}">
       <div class="container reference-header-inner">

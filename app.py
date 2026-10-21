@@ -11,6 +11,7 @@ import tempfile
 from urllib.parse import quote as url_quote
 
 from kashmir_hotels import HOTEL_CATEGORIES, KASHMIR_HOTELS
+from kashmir_treks import KASHMIR_TREKS
 import smtplib
 import sqlite3
 import ssl
@@ -552,6 +553,36 @@ class QuoteHotelBlackout(db.Model):
     quote_hotel = db.relationship("QuoteHotel", backref=db.backref("blackouts", cascade="all, delete-orphan"))
 
 
+TREK_KINDS = {"trek": "Trek", "wildlife": "Wildlife"}
+TREK_DIFFICULTIES = ["Easy", "Moderate", "Hard", "Expert"]
+
+class Trek(db.Model):
+    """A trek or wildlife trip listed on /treks; list fields (highlights, includes, itinerary) are JSON."""
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(140), nullable=False)
+    slug = db.Column(db.String(160), unique=True, nullable=False)
+    kind = db.Column(db.String(20), default="trek")
+    tag = db.Column(db.String(40), nullable=True)
+    subtitle = db.Column(db.String(200), nullable=True)
+    difficulty = db.Column(db.String(20), default="Moderate")
+    duration = db.Column(db.String(40), nullable=True)
+    max_altitude = db.Column(db.String(40), nullable=True)
+    distance = db.Column(db.String(40), nullable=True)
+    best_season = db.Column(db.String(60), nullable=True)
+    start_point = db.Column(db.String(120), nullable=True)
+    price = db.Column(db.String(40), nullable=True)
+    image_url = db.Column(db.String(500), nullable=True)
+    description = db.Column(db.Text, nullable=True)
+    highlights = db.Column(db.Text, nullable=True)
+    includes = db.Column(db.Text, nullable=True)
+    itinerary = db.Column(db.Text, nullable=True)
+    fitness_note = db.Column(db.Text, nullable=True)
+    featured = db.Column(db.Boolean, default=False)
+    active = db.Column(db.Boolean, default=True)
+    sort_order = db.Column(db.Integer, default=0)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
 DEFAULT_HOTELS = [
     ("WelcomHeritage Grand", "welcom-heritage-grand", "Srinagar", 15000, 5, "heritage luxury", "/static/images/welcomheritage-grand-exterior.jpg", ["/static/images/welcomheritage-grand-exterior.jpg","/static/images/welcomheritage-grand-lobby.jpg","/static/images/welcomheritage-grand-lounge.jpg","/static/images/welcomheritage-grand-room.jpg"], ["Free Wi-Fi","Restaurant","Room service","Family rooms","Parking","Heating","Travel desk","Airport transfers"], "A comfortable base for your Srinagar journey", "WelcomHeritage Grand is a premium stay option for travellers exploring Srinagar and the wider Kashmir Valley.", "Premium room", True),
     ("The Khyber Himalayan Resort & Spa", "the-khyber-himalayan-resort-spa", "Gulmarg", 30000, 5, "luxury romantic", "/static/images/khyber-gulmarg-exterior.jpg", ["/static/images/khyber-gulmarg-exterior.jpg","/static/images/khyber-gulmarg-winter-wing.jpg","/static/images/khyber-gulmarg-pool.jpg","/static/images/khyber-gulmarg-room.jpg"], ["Heated indoor pool","Spa and wellness","Free Wi-Fi","Restaurants","Mountain views","Room service","Heating","Airport transfers"], "A luxury mountain retreat in Gulmarg", "An alpine setting surrounded by pine forests and snow-covered slopes, ideal for sightseeing and a relaxed mountain escape.", "Luxury mountain-view room", True),
@@ -623,6 +654,13 @@ DEFAULT_ITINERARIES = {
     ],
 }
 
+def unique_trek_slug(name, current_id=None):
+    base = re.sub(r"[^a-z0-9]+", "-", (name or "trek").lower()).strip("-") or "trek"
+    slug, n = base, 2
+    while Trek.query.filter(Trek.slug == slug, Trek.id != current_id).first():
+        slug, n = f"{base}-{n}", n + 1
+    return slug
+
 def initialize_database():
     db.create_all()
     if Hotel.query.count() == 0:
@@ -671,6 +709,17 @@ def initialize_database():
                     library[key] = QuoteHotel(name=stay["name"].strip(), location=stay.get("location") or None, room_types=stay.get("room") or None)
                     db.session.add(library[key])
         db.session.add(SiteSetting(setting_key="quote_hotels_seeded_v2", setting_value="1"))
+        db.session.commit()
+
+    if not SiteSetting.query.filter_by(setting_key="treks_seeded_v1").first():
+        # One-time starter list for /treks; afterwards the admin owns the catalogue (deleted treks stay deleted).
+        if Trek.query.count() == 0:
+            for position, item in enumerate(KASHMIR_TREKS):
+                data = dict(item)
+                for field in ("highlights", "includes", "itinerary"):
+                    data[field] = json.dumps(data.get(field) or [])
+                db.session.add(Trek(slug=unique_trek_slug(data["name"]), sort_order=position, active=True, **data))
+        db.session.add(SiteSetting(setting_key="treks_seeded_v1", setting_value="1"))
         db.session.commit()
 
     # Do not auto-seed starter package tours. Keep the catalog user-managed only.
@@ -1269,6 +1318,19 @@ def tours():
         all_tours = [tour for tour in all_tours if traveler in f"{tour.title} {tour.description}".lower()]
     return render_template("tours.html", tours=all_tours, contact=get_contact_info())
 
+def get_treks():
+    return Trek.query.filter_by(active=True).order_by(Trek.sort_order, Trek.id).all()
+
+@app.route("/treks")
+def treks():
+    return render_template("treks.html", treks=get_treks(), kinds=TREK_KINDS, difficulties=TREK_DIFFICULTIES, contact=get_contact_info())
+
+@app.route("/trek/<slug>")
+def trek_detail(slug):
+    trek = Trek.query.filter_by(slug=slug, active=True).first_or_404()
+    related = [item for item in get_treks() if item.id != trek.id and item.kind == trek.kind][:3]
+    return render_template("trek_detail.html", trek=trek, related=related, kinds=TREK_KINDS, contact=get_contact_info())
+
 @app.route("/destinations")
 def destinations():
     destinations_data = []
@@ -1553,10 +1615,11 @@ def robots():
 
 @app.route("/sitemap.xml")
 def sitemap():
-    pages = ["/", "/about", "/tours", "/hotels", "/destinations", "/blogs", "/contact", "/gallery", "/privacy", "/terms"]
+    pages = ["/", "/about", "/tours", "/treks", "/hotels", "/destinations", "/blogs", "/contact", "/gallery", "/privacy", "/terms"]
     root = request.url_root.rstrip("/")
     urls = [root + page for page in pages]
     urls += [url_for("tour_detail", tour_id=tour.id, _external=True) for tour in get_tours()]
+    urls += [url_for("trek_detail", slug=trek.slug, _external=True) for trek in get_treks()]
     urls += [url_for("blog_detail", slug=blog["slug"], _external=True) for blog in get_blog_posts()]
     urls += [url_for("hotel_detail_by_slug", slug=hotel.slug, _external=True) for hotel in Hotel.query.filter_by(active=True).all()]
     body = '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + "".join(f"<url><loc>{url}</loc></url>" for url in urls) + "</urlset>"
@@ -2087,6 +2150,70 @@ def admin_edit_tour(tour_id):
     except json.JSONDecodeError:
         itinerary_by_day = {}
     return render_template("admin_edit_tour.html", tour=tour, itinerary_by_day=itinerary_by_day, media_images=get_uploaded_media_urls(), contact=get_contact_info())
+
+@app.route("/admin/treks")
+@login_required
+def admin_treks():
+    return render_template("admin_treks.html", treks=Trek.query.order_by(Trek.sort_order, Trek.id).all(), kinds=TREK_KINDS, contact=get_contact_info())
+
+def save_trek_form(trek):
+    form = request.form
+    lines = lambda name: json.dumps([line.strip() for line in form.get(name, "").splitlines() if line.strip()])
+    trek.name = form.get("name", "").strip() or "Untitled trek"
+    trek.slug = unique_trek_slug(form.get("slug", "").strip() or trek.name, trek.id)
+    trek.kind = form.get("kind") if form.get("kind") in TREK_KINDS else "trek"
+    trek.difficulty = form.get("difficulty") if form.get("difficulty") in TREK_DIFFICULTIES else "Moderate"
+    for field in ("tag", "subtitle", "duration", "max_altitude", "distance", "best_season", "start_point", "price", "description", "fitness_note"):
+        setattr(trek, field, form.get(field, "").strip() or None)
+    trek.highlights = lines("highlights")
+    trek.includes = lines("includes")
+    itinerary = []
+    for day in range(1, 16):
+        day_title = form.get(f"day_{day}_title", "").strip()
+        plan = form.get(f"day_{day}_plan", "").strip()
+        if day_title or plan:
+            itinerary.append({"day": len(itinerary) + 1, "title": day_title, "plan": plan})
+    trek.itinerary = json.dumps(itinerary)
+    trek.sort_order = form.get("sort_order", type=int) or 0
+    trek.featured = bool(form.get("featured"))
+    trek.active = bool(form.get("active"))
+    trek.image_url = form.get("image_url", "").strip() or None
+    uploaded_image = request.files.get("image_file")
+    if uploaded_image and uploaded_image.filename and allowed_file(uploaded_image.filename):
+        name, ext = os.path.splitext(secure_filename(uploaded_image.filename))
+        saved_name = f"{name}_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}{ext}"
+        path = os.path.join(app.config["UPLOAD_FOLDER"], saved_name)
+        uploaded_image.save(path)
+        optimize_image_file(path)
+        trek.image_url = url_for("static", filename=f"uploads/{saved_name}")
+
+@app.route("/admin/treks/new", methods=["GET", "POST"])
+@login_required
+def admin_create_trek():
+    if request.method == "POST":
+        trek = Trek()
+        save_trek_form(trek)
+        db.session.add(trek)
+        db.session.commit()
+        return redirect(url_for("admin_treks"))
+    return render_template("admin_edit_trek.html", trek=None, kinds=TREK_KINDS, difficulties=TREK_DIFFICULTIES, media_images=get_uploaded_media_urls(), contact=get_contact_info())
+
+@app.route("/admin/treks/<int:trek_id>/edit", methods=["GET", "POST"])
+@login_required
+def admin_edit_trek(trek_id):
+    trek = Trek.query.get_or_404(trek_id)
+    if request.method == "POST":
+        save_trek_form(trek)
+        db.session.commit()
+        return redirect(url_for("admin_treks"))
+    return render_template("admin_edit_trek.html", trek=trek, kinds=TREK_KINDS, difficulties=TREK_DIFFICULTIES, media_images=get_uploaded_media_urls(), contact=get_contact_info())
+
+@app.route("/admin/treks/<int:trek_id>/delete", methods=["POST"])
+@login_required
+def admin_delete_trek(trek_id):
+    db.session.delete(Trek.query.get_or_404(trek_id))
+    db.session.commit()
+    return redirect(url_for("admin_treks"))
 
 @app.route("/admin/bookings")
 @login_required

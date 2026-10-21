@@ -90,6 +90,33 @@
   const brief = document.querySelector("#tripBrief textarea[name='message']");
   if (season && brief && !brief.value) brief.value = `I'd like to travel in ${season}. `;
 
+  // Treks page: filter cards by type and difficulty
+  const trekFilters = document.querySelector("[data-trek-filters]");
+  const trekGrid = document.querySelector("[data-trek-grid]");
+  if (trekFilters && trekGrid) {
+    const chosen = { kind: "all", difficulty: "all" };
+    const count = trekFilters.querySelector("[data-trek-count]");
+    const empty = document.querySelector("[data-trek-empty]");
+    trekFilters.querySelectorAll("[data-filter]").forEach((button) => button.addEventListener("click", () => {
+      chosen[button.dataset.filter] = button.dataset.value;
+      trekFilters.querySelectorAll(`[data-filter="${button.dataset.filter}"]`).forEach((b) => {
+        const on = b === button;
+        b.classList.toggle("is-active", on);
+        b.setAttribute("aria-pressed", String(on));
+      });
+      let shown = 0;
+      trekGrid.querySelectorAll(".ws-trek").forEach((card) => {
+        const match = ["kind", "difficulty"].every((key) => chosen[key] === "all" || card.dataset[key] === chosen[key]);
+        card.hidden = !match;
+        if (match) shown += 1;
+      });
+      if (count) count.textContent = shown;
+      const noun = trekFilters.querySelector("[data-trek-noun]");
+      if (noun) noun.textContent = shown === 1 ? "trip" : "trips";
+      if (empty) empty.hidden = shown > 0;
+    }));
+  }
+
   // Reveal on scroll
   if (!reduceMotion && "IntersectionObserver" in window) {
     const targets = document.querySelectorAll(".ws-section .ws-wrap > *:not(.ws-tiles):not(form), .ws-trips .ws-wrap, .ws-exp, .ws-stay, .ws-tour, .ws-post, .ws-dest-row, .ws-values article, .ws-steps article");

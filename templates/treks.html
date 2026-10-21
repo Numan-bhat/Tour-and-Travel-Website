@@ -1,0 +1,121 @@
+{% extends "site.html" %}
+{% block title %}Kashmir Treks &amp; Wildlife Trips | Waadi Kashmir Travels{% endblock %}
+{% block meta_description %}Guided Kashmir treks — Great Lakes, Tarsar Marsar, Gangabal, Kolahoi — and wildlife trips to Dachigam and Overa-Aru, with local guides, camping and transfers from Srinagar.{% endblock %}
+
+{% macro wa_link(text) -%}
+https://api.whatsapp.com/send/?phone={{ contact.whatsapp }}&amp;text={{ text|urlencode }}&amp;type=phone_number&amp;app_absent=0
+{%- endmacro %}
+
+{% macro trek_card(trek, large=False) -%}
+{% set highlights = trek.highlights|from_json %}
+<article class="ws-trek{% if large %} is-large{% endif %}" data-kind="{{ trek.kind }}" data-difficulty="{{ trek.difficulty }}">
+  <a class="ws-trek-img" href="{{ url_for('trek_detail', slug=trek.slug) }}" tabindex="-1" aria-hidden="true">
+    <img src="{{ trek.image_url or url_for('static', filename='images/waadi-kashmir-travels-logo-enhanced.webp') }}" alt="" loading="lazy" decoding="async">
+    {% if trek.tag %}<span class="ws-trek-tag">{{ trek.tag }}</span>{% endif %}
+    <span class="ws-trek-kind">{{ kinds.get(trek.kind, 'Trek') }}</span>
+  </a>
+  <div class="ws-trek-body">
+    <p class="ws-trek-where"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>{{ trek.start_point or 'Kashmir' }}</p>
+    <h3><a href="{{ url_for('trek_detail', slug=trek.slug) }}">{{ trek.name }}</a></h3>
+    {% if trek.subtitle %}<p class="ws-trek-sub">{{ trek.subtitle }}</p>{% endif %}
+    <div class="ws-trek-chips">
+      <span class="ws-level is-{{ trek.difficulty|lower }}">{{ trek.difficulty }}</span>
+      {% if trek.duration %}<span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>{{ trek.duration }}</span>{% endif %}
+      {% if trek.max_altitude %}<span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 20 6-11 4 6 3-4 5 9z"/></svg>{{ trek.max_altitude }}</span>{% endif %}
+    </div>
+    {% if large %}<p class="ws-trek-text">{{ (trek.description or trek.subtitle or "")|truncate(170) }}</p>{% endif %}
+    {% if highlights %}
+    <ul class="ws-trek-hl">{% for item in highlights[:2] %}<li>{{ item }}</li>{% endfor %}{% if highlights|length > 2 %}<li class="more">+{{ highlights|length - 2 }} more</li>{% endif %}</ul>
+    {% endif %}
+    <div class="ws-trek-foot">
+      <div><small>{% if trek.price %}Starting from{% else %}Price{% endif %}</small><strong>{{ trek.price or 'On request' }}</strong></div>
+      <div class="ws-trek-btns">
+        <a class="ws-trek-wa" href="{{ wa_link('Hello Waadi Kashmir Travels, I am interested in the ' ~ trek.name ~ '. Please share dates and pricing.') }}" target="_blank" rel="noopener" aria-label="Ask about {{ trek.name }} on WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1.3-4A8.5 8.5 0 1 1 8 18.7z"/></svg></a>
+        <a class="ws-chip-btn" href="{{ url_for('trek_detail', slug=trek.slug) }}">Details</a>
+      </div>
+    </div>
+  </div>
+</article>
+{%- endmacro %}
+
+{% block content %}
+{% set featured = treks|selectattr('featured')|list %}
+{% set trek_count = treks|selectattr('kind', 'equalto', 'trek')|list|length %}
+{% set wildlife_count = treks|selectattr('kind', 'equalto', 'wildlife')|list|length %}
+
+<section class="ws-page-hero ws-trek-hero">
+  <img src="{{ url_for('static', filename='uploads/sonmarg_20260811073028.jpg') }}" alt="" decoding="async" fetchpriority="high">
+  <div class="ws-wrap">
+    <nav class="ws-crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>›</span><span>Treks</span></nav>
+    <p class="ws-kicker"><span></span>Treks &amp; wild places</p>
+    <h1>Walk the high Himalaya of Kashmir</h1>
+    <p class="ws-hero-lead">Alpine lakes, glacier valleys and shepherd meadows — guided treks and wildlife trips run by our Srinagar team, with camping, meals and transfers arranged end to end.</p>
+    <div class="ws-hero-actions">
+      <a class="ws-btn ws-btn-gold" href="#all-treks">Explore treks</a>
+      <a class="ws-btn ws-btn-line" href="{{ wa_link('Hello Waadi Kashmir Travels, I would like help choosing a Kashmir trek.') }}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1.3-4A8.5 8.5 0 1 1 8 18.7z"/></svg>Ask on WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+<div class="ws-trek-stats">
+  <div class="ws-wrap">
+    <div><strong>{{ trek_count }}</strong><span>Himalayan treks</span></div>
+    <div><strong>{{ wildlife_count }}</strong><span>Wildlife trips</span></div>
+    <div><strong>Jul – Sep</strong><span>High-altitude season</span></div>
+    <div><strong>Local</strong><span>Kashmiri guides &amp; crews</span></div>
+  </div>
+</div>
+
+{% if featured %}
+<section class="ws-section ws-trek-featured">
+  <div class="ws-wrap">
+    <div class="ws-head-row">
+      <div><p class="ws-tag">Our pick</p><h2 class="ws-title">Featured treks</h2></div>
+      <p>The routes travellers ask us about most — each one guided, fully supported and planned around the weather.</p>
+    </div>
+    <div class="ws-trek-grid is-featured">{% for trek in featured[:3] %}{{ trek_card(trek, True) }}{% endfor %}</div>
+  </div>
+</section>
+{% endif %}
+
+<section class="ws-section ws-mist" id="all-treks">
+  <div class="ws-wrap">
+    <div class="ws-head-row">
+      <div><p class="ws-tag">Find your trail</p><h2 class="ws-title">All treks &amp; wildlife trips</h2></div>
+      <p>Filter by trip type or difficulty. Every trip can be run privately on your dates.</p>
+    </div>
+    <div class="ws-trek-filters" data-trek-filters>
+      <div role="group" aria-label="Trip type">
+        <button type="button" class="is-active" data-filter="kind" data-value="all" aria-pressed="true">All</button>
+        {% for key, label in kinds.items() %}<button type="button" data-filter="kind" data-value="{{ key }}" aria-pressed="false">{{ label }}{% if key == 'trek' %}s{% endif %}</button>{% endfor %}
+      </div>
+      <div role="group" aria-label="Difficulty">
+        <button type="button" class="is-active" data-filter="difficulty" data-value="all" aria-pressed="true">All levels</button>
+        {% for level in difficulties %}<button type="button" data-filter="difficulty" data-value="{{ level }}" aria-pressed="false">{{ level }}</button>{% endfor %}
+      </div>
+      <p class="ws-trek-count" aria-live="polite"><b data-trek-count>{{ treks|length }}</b> <span data-trek-noun>{{ 'trip' if treks|length == 1 else 'trips' }}</span></p>
+    </div>
+    <div class="ws-trek-grid" data-trek-grid>
+      {% for trek in treks %}{{ trek_card(trek) }}{% endfor %}
+    </div>
+    <div class="ws-empty" data-trek-empty {% if treks %}hidden{% endif %}><h3>No trips match these filters</h3><p>Try another difficulty, or tell us what you have in mind and we’ll suggest a route.</p><a class="ws-btn ws-btn-dark" href="/contact#quote">Ask our team</a></div>
+  </div>
+</section>
+
+<section class="ws-section">
+  <div class="ws-wrap">
+    <p class="ws-tag">Before you go</p>
+    <h2 class="ws-title">Trekking in Kashmir — the essentials</h2>
+    <div class="ws-trek-tips">
+      <article><span class="ws-icon-box"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M8 10h8M8 14h5"/></svg></span><h3>Carry original ID</h3><p>Army checkposts on the Great Lakes and other border-area routes check every trekker. Foreign nationals need their passport and visa.</p></article>
+      <article><span class="ws-icon-box"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg></span><h3>Train before you come</h3><p>Moderate treks mean 6–8 hours of walking a day above 3,500 m. Regular walks, stairs and jogging for a month make a big difference.</p></article>
+      <article><span class="ws-icon-box"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M5 8l7-5 7 5M7 21h10"/></svg></span><h3>Pick the right month</h3><p>High passes open from early July and close with the first snow in late September. Meadow walks and day hikes run from spring to autumn.</p></article>
+      <article><span class="ws-icon-box"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7z"/></svg></span><h3>Postpaid SIM only</h3><p>Prepaid SIMs from outside J&amp;K do not work here, and there is no signal on most trails. We keep your family updated from base when needed.</p></article>
+    </div>
+  </div>
+</section>
+
+<section class="ws-cta-band">
+  <div class="ws-wrap"><h2>Not sure which trek suits you?</h2><div class="ws-actions" style="margin-top:0"><a class="ws-btn ws-btn-gold" href="/contact#quote">Plan my trek</a><a class="ws-btn ws-btn-line" href="tel:{{ contact.phone }}">Call {{ contact.phone }}</a></div></div>
+</section>
+{% endblock %}

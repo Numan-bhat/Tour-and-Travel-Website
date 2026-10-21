@@ -48,6 +48,7 @@
           {% set path = request.path %}
           <a href="/" {% if path == '/' %}aria-current="page"{% endif %}>Home</a>
           <a href="/tours" {% if path.startswith('/tour') %}aria-current="page"{% endif %}>Packages</a>
+          <a href="/treks" {% if path.startswith('/trek') %}aria-current="page"{% endif %}>Treks</a>
           <a href="/destinations" {% if path.startswith('/destination') %}aria-current="page"{% endif %}>Destinations</a>
           <a href="/hotels" {% if path.startswith('/hotel') %}aria-current="page"{% endif %}>Stays</a>
           <a href="/blogs" {% if path.startswith('/blog') %}aria-current="page"{% endif %}>Journal</a>
@@ -73,7 +74,7 @@
             <a href="https://api.whatsapp.com/send/?phone={{ contact.whatsapp }}&amp;type=phone_number&amp;app_absent=0" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1.3-4A8.5 8.5 0 1 1 8 18.7z"/><path d="M9 9c0 3 3 6 6 6l1-1.5-2-1-1 .8c-1-.4-1.9-1.3-2.3-2.3l.8-1-1-2z" fill="currentColor" stroke="none"/></svg></a>
           </div>
         </div>
-        <div><h2>Quick links</h2><a href="/">Home</a><a href="/about">About us</a><a href="/tours">All packages</a><a href="/gallery">Gallery</a><a href="/blogs">Travel journal</a><a href="/contact">Contact us</a></div>
+        <div><h2>Quick links</h2><a href="/">Home</a><a href="/about">About us</a><a href="/tours">All packages</a><a href="/treks">Treks &amp; wildlife</a><a href="/gallery">Gallery</a><a href="/blogs">Travel journal</a><a href="/contact">Contact us</a></div>
         <div><h2>Kashmir</h2><a href="/destinations#srinagar">Srinagar</a><a href="/destinations#gulmarg">Gulmarg</a><a href="/destinations#pahalgam">Pahalgam</a><a href="/destinations#sonamarg">Sonamarg</a><a href="/destinations#doodhpathri">Doodhpathri</a></div>
         <div><h2>Travel</h2><a href="/destinations#leh">Ladakh</a><a href="/hotels">Hotels &amp; houseboats</a><a href="/contact#quote">Custom itinerary</a><a href="/contact">Kashmir cab booking</a><a href="/terms">Booking policy</a>{% if payment_url %}<a href="{{ payment_url }}" target="_blank" rel="noopener">Secure payment ↗</a>{% endif %}</div>
       </div>
