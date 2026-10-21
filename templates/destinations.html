@@ -1,72 +1,40 @@
-{% extends "layout.html" %}
+{% extends "site.html" %}
 {% block title %}Kashmir & Ladakh Destinations | Waadi Kashmir Travels{% endblock %}
 {% block meta_description %}Explore Srinagar, Gulmarg, Pahalgam, Sonamarg, Ladakh and more with practical seasonal advice and local highlights.{% endblock %}
 
 {% block content %}
-<section class="page-hero page-hero-destinations">
-  <div class="container page-hero-inner">
-    <div class="page-hero-copy">
-      <span class="section-tag">Popular Destinations</span>
-      <h1>Discover the Most Scenic Places in Kashmir & Ladakh</h1>
-      <p>Explore iconic lakes, gardens, alpine valleys, and cultural landmarks that make every journey memorable.</p>
-      <div class="page-hero-pills">
-        <span>Dal Lake</span>
-        <span>Gulmarg</span>
-        <span>Pahalgam</span>
-      </div>
-    </div>
-    <div class="page-hero-card">
-      <h3>Travel with confidence</h3>
-      <ul>
-        <li>Expert local guidance</li>
-        <li>Perfect timing for every season</li>
-        <li>Comfort-first sightseeing plans</li>
-      </ul>
-    </div>
+<section class="ws-page-hero">
+  <img src="{{ url_for('static', filename='uploads/kashmir-2._20260811072824.jpg') }}" alt="" decoding="async">
+  <div class="ws-wrap">
+    <nav class="ws-crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>›</span><span>Destinations</span></nav>
+    <p class="ws-kicker"><span></span>Places to visit</p>
+    <h1>Kashmir &amp; Ladakh destinations</h1>
+    <p class="ws-hero-lead">Lakes, meadows, glaciers and high-altitude deserts — with the best time to go and what not to miss at each stop.</p>
   </div>
 </section>
 
-<section class="page-section">
-  <div class="container">
-    <div class="section-intro center">
-      <span class="section-tag">Popular Destinations</span>
-      <h2>Discover Kashmir & Ladakh Destinations</h2>
-      <p>Explore the most iconic destinations of Kashmir and Ladakh, from serene lakes to alpine meadows and cultural highlights.</p>
-    </div>
+<nav class="ws-dest-nav" aria-label="Jump to destination"><div class="ws-wrap">{% for dest in destinations %}<a href="#{{ dest.name|slugify }}">{{ dest.name }}</a>{% endfor %}</div></nav>
 
-    <div class="destinations-grid">
-      {% for dest in destinations %}
-      <article class="destination-card">
-        {% if dest.image_url %}
-        <div class="destination-image">
-          <img src="{{ dest.image_url }}" alt="{{ dest.name }}" loading="lazy" decoding="async" />
-        </div>
-        {% endif %}
-        <div class="destination-content">
-          <div class="destination-header">
-            <h3>{{ dest.name }}</h3>
-            <span class="region-badge">{{ dest.region }}</span>
-          </div>
-          <p class="destination-desc">{{ dest.description }}</p>
-          <div class="destination-info">
-            <div class="info-block">
-              <h4>Highlights</h4>
-              <ul>
-                {% for highlight in dest.highlights %}
-                <li>{{ highlight }}</li>
-                {% endfor %}
-              </ul>
-            </div>
-            <div class="info-block info-summary">
-              <h4>Best Time</h4>
-              <p>{{ dest.best_time }}</p>
-              <p class="info-note">Ideal season for comfortable travel and clear mountain views.</p>
-            </div>
-          </div>
-        </div>
-      </article>
-      {% endfor %}
-    </div>
+<section>
+  <div class="ws-wrap">
+    {% for dest in destinations %}
+    <article class="ws-dest-row" id="{{ dest.name|slugify }}">
+      <div class="ws-dest-img">{% if dest.image_url %}<img src="{{ dest.image_url }}" alt="{{ dest.name }}" loading="lazy" decoding="async">{% endif %}<span>{{ dest.region }}</span></div>
+      <div class="ws-dest-copy">
+        <span class="ws-place-bar"></span>
+        <h2>{{ dest.name }}</h2>
+        <p class="ws-place-region">{{ dest.region }}</p>
+        <p>{{ dest.description }}</p>
+        {% if dest.highlights %}<ul>{% for highlight in dest.highlights %}<li>{{ highlight }}</li>{% endfor %}</ul>{% endif %}
+        <div class="ws-best"><span class="ws-icon-box"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg></span><div><b>Best time to visit</b>{{ dest.best_time }}</div></div>
+        <div class="ws-actions" style="margin-top:0"><a class="ws-btn ws-btn-dark" href="/tours?q={{ dest.name|urlencode }}">Packages with {{ dest.name }}</a><a class="ws-btn ws-btn-white" href="/contact#quote">Plan a visit</a></div>
+      </div>
+    </article>
+    {% endfor %}
   </div>
+</section>
+
+<section class="ws-cta-band">
+  <div class="ws-wrap"><h2>Not sure where to start? We’ll suggest the right route for your season.</h2><a class="ws-btn ws-btn-gold" href="/contact#quote">Ask a local expert</a></div>
 </section>
 {% endblock %}

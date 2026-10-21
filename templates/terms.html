@@ -1,4 +1,23 @@
-{% extends "layout.html" %}
+{% extends "site.html" %}
 {% block title %}Terms, Booking & Cancellation Policy | Waadi Kashmir Travels{% endblock %}
 {% block meta_description %}Read the booking, payment, cancellation and travel terms for Waadi Kashmir Travels.{% endblock %}
-{% block content %}<section class="policy-page"><div class="container"><p class="reference-eyebrow">BOOKING INFORMATION</p><h1>Terms, booking and cancellation policy</h1><p class="policy-updated">Last updated: 11 August 2026</p><h2>Quotes and confirmation</h2><p>Website prices are indicative unless a quotation states otherwise. A booking is confirmed only after written confirmation and receipt of the stated deposit. Availability can change until confirmation.</p><h2>Payments</h2><p>Payment stages, accepted methods and due dates will be listed in your quotation. Guests are responsible for bank or payment-provider charges unless agreed otherwise.</p><h2>Changes and cancellations</h2><p>Cancellation charges depend on travel dates and supplier rules. The exact schedule supplied in your accepted quotation takes precedence. Changes may cause revised hotel, transport or activity costs.</p><h2>Travel conditions</h2><p>Weather, road closures, safety restrictions, flight disruption and other circumstances outside our control may require itinerary changes. We will provide reasonable assistance, but additional costs may remain the traveller’s responsibility.</p><h2>Guest responsibilities</h2><p>Guests must provide accurate details, carry valid identification and permits, follow local laws and disclose relevant accessibility or medical needs before confirmation. Travel insurance is strongly recommended.</p><h2>Questions</h2><p>Ask us to confirm the cancellation schedule and inclusions for your specific trip before paying: <a href="mailto:{{ contact.email }}">{{ contact.email }}</a>.</p></div></section>{% endblock %}
+{% block content %}
+<section class="ws-page-hero compact">
+  <div class="ws-wrap">
+    <nav class="ws-crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>›</span><span>Terms</span></nav>
+    <p class="ws-kicker"><span></span>Booking information</p>
+    <h1>Terms, booking &amp; cancellation</h1>
+  </div>
+</section>
+<article class="ws-article" style="padding-top:3rem">
+  <p class="ws-article-meta">Last updated: 11 August 2026</p>
+  <div class="ws-prose">
+    <h2>Quotes and confirmation</h2><p>Website prices are indicative unless a quotation states otherwise. A booking is confirmed only after written confirmation and receipt of the stated deposit. Availability can change until confirmation.</p>
+    <h2>Payments</h2><p>Payment stages, accepted methods and due dates will be listed in your quotation. Guests are responsible for bank or payment-provider charges unless agreed otherwise.</p>
+    <h2>Changes and cancellations</h2><p>Cancellation charges depend on travel dates and supplier rules. The exact schedule supplied in your accepted quotation takes precedence. Changes may cause revised hotel, transport or activity costs.</p>
+    <h2>Travel conditions</h2><p>Weather, road closures, safety restrictions, flight disruption and other circumstances outside our control may require itinerary changes. We will provide reasonable assistance, but additional costs may remain the traveller’s responsibility.</p>
+    <h2>Guest responsibilities</h2><p>Guests must provide accurate details, carry valid identification and permits, follow local laws and disclose relevant accessibility or medical needs before confirmation. Travel insurance is strongly recommended.</p>
+    <h2>Questions</h2><p>Ask us to confirm the cancellation schedule and inclusions for your specific trip before paying: <a href="mailto:{{ contact.email }}">{{ contact.email }}</a>.</p>
+  </div>
+</article>
+{% endblock %}

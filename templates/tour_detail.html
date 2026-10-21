@@ -1,91 +1,90 @@
-{% extends "layout.html" %}
+{% extends "site.html" %}
 {% block title %}{{ tour.title }} | Waadi Kashmir Travels{% endblock %}
 {% block meta_description %}{{ tour.description|striptags|truncate(155) }}{% endblock %}
-{% block extra_css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/journey.css') }}">{% endblock %}
 
 {% block content %}
-<main class="journey-detail">
-  <section class="journey-hero">
-    {% if tour.image_url %}<img src="{{ tour.image_url }}" alt="{{ tour.title }}">{% endif %}
-    <div class="journey-hero-shade"></div>
-    <div class="container journey-hero-content">
-      <nav class="journey-breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span>›</span><a href="/tours">Kashmir packages</a><span>›</span><span>{{ tour.title }}</span></nav>
-      <div class="journey-hero-copy">
-        <p class="premium-kicker">Private Kashmir journey</p>
-        <h1>{{ tour.title }}</h1>
+<section class="ws-tour-hero">
+  {% if tour.image_url %}<img src="{{ tour.image_url }}" alt="{{ tour.title }}" fetchpriority="high">{% endif %}
+  <div class="ws-wrap">
+    <nav class="ws-crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>›</span><a href="/tours">Packages</a><span>›</span><span>{{ tour.duration }}</span></nav>
+    <p class="ws-kicker"><span></span>Private Kashmir journey</p>
+    <h1>{{ tour.title }}</h1>
+    <p class="ws-hero-lead">{{ tour.description }}</p>
+    <div class="ws-hero-actions"><a class="ws-btn ws-btn-gold" href="/tour/{{ tour.id }}/book">Request this package</a>{% if itinerary %}<a class="ws-btn ws-btn-line" href="#itinerary">View itinerary ↓</a>{% endif %}</div>
+  </div>
+</section>
+
+<div class="ws-wrap">
+  <div class="ws-card ws-facts">
+    <div><small>Starting from</small><strong>{{ tour.price or 'Custom quote' }}</strong></div>
+    <div><small>Duration</small><strong>{{ tour.duration }}</strong></div>
+    <div><small>Tour style</small><strong>Private &amp; flexible</strong></div>
+    <div><small>Support</small><strong>English · Hindi · Urdu</strong></div>
+    <a href="/tour/{{ tour.id }}/book">Get a quote <span aria-hidden="true">→</span></a>
+  </div>
+</div>
+
+<section class="ws-section">
+  <div class="ws-wrap ws-detail">
+    <div class="ws-detail-main">
+      <section>
+        <p class="ws-eyebrow dark">Journey overview</p>
+        <h2>A thoughtfully paced Kashmir experience</h2>
         <p>{{ tour.description }}</p>
-        <div class="journey-hero-actions"><a href="/tour/{{ tour.id }}/book">Design this journey</a><a href="#journey-itinerary">Explore itinerary <span>↓</span></a></div>
-      </div>
-      <div class="journey-hero-seal" aria-hidden="true"><span>WAADI</span><b>W</b><small>KASHMIR</small></div>
+        <p>This private itinerary can be refined around your dates, preferred hotel category, arrival schedule and the experiences that matter most to you.</p>
+      </section>
+
+      <section>
+        <p class="ws-eyebrow dark">What you will experience</p>
+        <h2>Highlights</h2>
+        <div class="ws-checks">{% for item in package_details.highlights %}<span><b>✓</b>{{ item }}</span>{% endfor %}</div>
+      </section>
+
+      {% if itinerary %}
+      <section id="itinerary">
+        <p class="ws-eyebrow dark">Day by day</p>
+        <h2>Tour itinerary</h2>
+        <div class="ws-itinerary">
+          {% for item in itinerary %}
+          <details {% if loop.first %}open{% endif %}>
+            <summary><span>Day {{ item.day }}</span><strong>{{ item.title or 'Kashmir sightseeing' }}</strong><i aria-hidden="true">+</i></summary>
+            <p>{{ item.plan or 'Detailed plan to be confirmed.' }}</p>
+          </details>
+          {% endfor %}
+        </div>
+      </section>
+      {% endif %}
+
+      <section>
+        <p class="ws-eyebrow dark">Know before you book</p>
+        <h2>Included and excluded</h2>
+        <div class="ws-terms">
+          <article><h3>Package inclusions</h3><ul>{% for item in package_details.inclusions %}<li>{{ item }}</li>{% endfor %}</ul></article>
+          <article class="out"><h3>Package exclusions</h3><ul>{% for item in package_details.exclusions %}<li>{{ item }}</li>{% endfor %}</ul></article>
+        </div>
+        <p class="ws-note">Your written quotation confirms the exact hotels, room category, meals, vehicle, inclusions, total price, payment schedule and cancellation terms.</p>
+      </section>
     </div>
-  </section>
 
-  <section class="journey-booking-strip">
-    <div class="container">
-      <div><em>01</em><span><small>Indicative price</small><strong>{{ tour.price or 'Custom quote' }}</strong></span></div>
-      <div><em>02</em><span><small>Duration</small><strong>{{ tour.duration }}</strong></span></div>
-      <div><em>03</em><span><small>Tour style</small><strong>Private & customisable</strong></span></div>
-      <div><em>04</em><span><small>Group size</small><strong>Your private group</strong></span></div>
-      <div><em>05</em><span><small>Support</small><strong>English · Hindi · Urdu</strong></span></div>
-      <a href="/tour/{{ tour.id }}/book">Request a quotation <span>→</span></a>
-    </div>
-  </section>
+    <aside class="ws-aside">
+      <p class="ws-eyebrow">Plan this journey</p>
+      <h2>Make it yours.</h2>
+      <p>Share your dates and travel style. Our Srinagar team will prepare a clear, personalised quotation.</p>
+      <div class="ws-aside-price"><small>Starting from</small><strong>{{ tour.price or 'On request' }}</strong><span>Final price depends on dates and selections</span></div>
+      <a class="ws-btn ws-btn-gold" href="/tour/{{ tour.id }}/book">Request this package <span aria-hidden="true">→</span></a>
+      <a class="ws-btn ws-btn-green" target="_blank" rel="noopener" href="https://api.whatsapp.com/send/?phone={{ contact.whatsapp }}&amp;text={{ ('Hello Waadi Kashmir Travels, I am interested in ' ~ tour.title ~ '. Please share availability and a written quotation. ' ~ request.url)|urlencode }}&amp;type=phone_number&amp;app_absent=0">Ask on WhatsApp</a>
+      <ul>{% for item in package_details.reasons[:3] %}<li>✓ {{ item }}</li>{% endfor %}</ul>
+      <p class="ws-aside-note">No booking is final until availability and terms are confirmed in writing.</p>
+    </aside>
+  </div>
+</section>
 
-  <section class="journey-content page-section">
-    <div class="container journey-content-grid">
-      <div class="journey-main">
-        <section class="journey-overview">
-          <p class="premium-kicker dark">Journey overview</p>
-          <h2>A thoughtfully paced Kashmir experience</h2>
-          <p>{{ tour.description }}</p>
-          <p>This private itinerary can be refined around your dates, preferred hotel category, arrival schedule and the experiences that matter most to you.</p>
-        </section>
-
-        <section class="journey-highlights">
-          <p class="premium-kicker dark">What you will experience</p>
-          <h2>Package highlights</h2>
-          <div>{% for item in package_details.highlights %}<span><b>✓</b>{{ item }}</span>{% endfor %}</div>
-        </section>
-
-        {% if itinerary %}
-        <section class="journey-itinerary" id="journey-itinerary">
-          <p class="premium-kicker dark">Your day-by-day plan</p>
-          <h2>Tour itinerary</h2>
-          <div class="journey-itinerary-list">
-            {% for item in itinerary %}
-            <details {% if loop.first %}open{% endif %}>
-              <summary><span>Day {{ item.day }}</span><strong>{{ item.title or 'Kashmir sightseeing' }}</strong><i>+</i></summary>
-              <p>{{ item.plan or 'Detailed plan to be confirmed.' }}</p>
-            </details>
-            {% endfor %}
-          </div>
-        </section>
-        {% endif %}
-
-        <section class="journey-terms">
-          <p class="premium-kicker dark">Know before you book</p>
-          <h2>Included and excluded</h2>
-          <div class="journey-terms-grid">
-            <article class="included"><h3><span>✓</span> Package inclusions</h3><ul>{% for item in package_details.inclusions %}<li>{{ item }}</li>{% endfor %}</ul></article>
-            <article class="excluded"><h3><span>×</span> Package exclusions</h3><ul>{% for item in package_details.exclusions %}<li>{{ item }}</li>{% endfor %}</ul></article>
-          </div>
-          <p class="package-note">Your written quotation will confirm the exact hotels, room category, meals, vehicle, inclusions, total price, payment schedule and cancellation terms.</p>
-        </section>
-      </div>
-
-      <aside class="journey-enquiry-card">
-        <p class="premium-kicker">Plan this journey</p>
-        <h2>Make it yours.</h2>
-        <p>Share your dates and travel style. Our Srinagar team will prepare a clear, personalised quotation.</p>
-        <div class="journey-enquiry-price"><small>Indicative price</small><strong>{{ tour.price or 'On request' }}</strong><span>Final price depends on dates and selections</span></div>
-        <a class="journey-primary-action" href="/tour/{{ tour.id }}/book">Request this package <span>→</span></a>
-        <a class="journey-whatsapp-action" target="_blank" rel="noopener" href="https://api.whatsapp.com/send/?phone={{ contact.whatsapp }}&amp;text={{ ('Hello Waadi Kashmir Travels, I am interested in ' ~ tour.title ~ '. Please share availability and a written quotation. ' ~ request.url)|urlencode }}&amp;type=phone_number&amp;app_absent=0">Ask on WhatsApp</a>
-        <ul>{% for item in package_details.reasons[:3] %}<li>✓ {{ item }}</li>{% endfor %}</ul>
-        <p class="journey-enquiry-note">No booking is final until availability and terms are confirmed in writing.</p>
-      </aside>
-    </div>
-  </section>
-
-  <section class="tour-why-section"><p class="reference-eyebrow">WHY TRAVEL WITH WAADI</p><h2>Comfortable travel, planned locally</h2><div>{% for item in package_details.reasons %}<span>✓ {{ item }}</span>{% endfor %}</div><a class="reference-btn" href="/tour/{{ tour.id }}/book">Request this package</a></section>
-</main>
+<section class="ws-section ws-ink ws-why">
+  <div class="ws-wrap">
+    <p class="ws-eyebrow">Why travel with Waadi</p>
+    <h2 class="ws-display light" style="font-size:clamp(2rem,4vw,3.2rem)">Comfortable travel, planned locally</h2>
+    <div class="ws-checks" style="margin-top:2rem">{% for item in package_details.reasons %}<span style="background:var(--ink-2);color:#fff"><b style="color:var(--gold)">✓</b>{{ item }}</span>{% endfor %}</div>
+    <div class="ws-actions"><a class="ws-btn ws-btn-gold" href="/tour/{{ tour.id }}/book">Request this package</a><a class="ws-btn ws-btn-line" href="/tours">See all packages</a></div>
+  </div>
+</section>
 {% endblock %}

@@ -1,45 +1,83 @@
-{% extends "layout.html" %}
+{% extends "site.html" %}
 {% block title %}{{ hotel.name }} | Waadi Kashmir Travels{% endblock %}
 {% block meta_description %}Explore {{ hotel.name }} in {{ hotel.location_short }}, including facilities, indicative rates and local booking assistance from Waadi Kashmir Travels.{% endblock %}
 {% block structured_data %}<script type="application/ld+json">{{ {"@context":"https://schema.org","@type":"Hotel","name":hotel.name,"address":hotel.location,"image":hotel.images,"priceRange":"INR " ~ hotel.price ~ "+","url":request.url}|tojson }}</script>{% endblock %}
 
 {% block content %}
-<section class="hotel-detail-head">
-  <div class="container">
-    <nav class="hotel-breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span>›</span><a href="/hotels">Hotels</a><span>›</span><span>{{ hotel.name }}</span></nav>
-    <div class="hotel-title-row"><div><span class="hotel-featured-label">Handpicked stay</span><h1>{{ hotel.name }}</h1><p>⌖ {{ hotel.location }}</p><div class="hotel-rating">{% for _ in range(hotel.stars) %}★{% endfor %} <small>{{ hotel.stars }}-star property category · not a guest-review score</small></div></div><a class="btn" href="#availability">Request availability</a></div>
+<section class="ws-page-hero compact">
+  <img src="{{ hotel.images[0] }}" alt="" decoding="async">
+  <div class="ws-wrap">
+    <nav class="ws-crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>›</span><a href="/hotels">Stays</a><span>›</span><span>{{ hotel.location_short }}</span></nav>
+    <p class="ws-kicker"><span></span>{{ hotel.location_short }} · {{ '★' * hotel.stars }}</p>
+    <h1>{{ hotel.name }}</h1>
+    <p class="ws-hero-lead">{{ hotel.intro_title }}</p>
   </div>
 </section>
 
-<section class="container hotel-gallery" aria-label="Hotel gallery">
-  <button class="hotel-gallery-main" type="button" data-gallery-image="{{ hotel.images[0] }}"><img src="{{ hotel.images[0] }}" alt="{{ hotel.name }} featured stay view" decoding="async" onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/waadi-kashmir-travels-logo-enhanced.webp') }}'"></button>
-  {% for image in hotel.images[1:] %}<button type="button" data-gallery-image="{{ image }}"><img src="{{ image }}" alt="Kashmir accommodation view {{ loop.index + 1 }}" loading="lazy"></button>{% endfor %}
-</section>
+<div class="ws-wrap">
+  <section class="ws-gallery-grid" aria-label="Hotel gallery">
+    {% for image in hotel.images[:5] %}<button type="button" data-gallery-image="{{ image }}" aria-label="Enlarge photo {{ loop.index }}"><img src="{{ image }}" alt="{{ hotel.name }} photo {{ loop.index }}" {% if not loop.first %}loading="lazy"{% endif %} onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/waadi-kashmir-travels-logo-enhanced.webp') }}'"></button>{% endfor %}
+  </section>
+</div>
 
-<section class="page-section hotel-detail-section">
-  <div class="container hotel-detail-layout">
-    <div class="hotel-detail-main">
-      <article class="hotel-detail-panel">
-        <span class="section-tag">About the stay</span><h2>{{ hotel.intro_title }}</h2>
+<section class="ws-section">
+  <div class="ws-wrap ws-detail">
+    <div class="ws-detail-main">
+      <section>
+        <p class="ws-eyebrow dark">About the stay</p>
+        <h2>{{ hotel.intro_title }}</h2>
         <p>{{ hotel.overview }}</p>
         <p>Room categories, meal plans and views vary. Tell us your dates and preferences, and we will verify the latest availability directly before confirming your booking.</p>
-      </article>
-      <article class="hotel-detail-panel"><h2>Facilities</h2><div class="hotel-amenities">{% for facility in hotel.facilities %}<span><b>✓</b>{{ facility }}</span>{% endfor %}</div></article>
-      <article class="hotel-detail-panel"><h2>Room and rate</h2><div class="hotel-room"><div><h3>{{ hotel.room_name }}</h3><p>Comfortable room for two guests. Exact bedding, view, inclusions and cancellation terms are confirmed with your quote.</p><div class="hotel-room-tags"><span>2 guests</span><span>Private bathroom</span><span>Breakfast options</span></div></div><div><small>Indicative rate from</small><strong>₹{{ "{:,}".format(hotel.price) }}</strong><em>per room / night</em><a class="btn" href="#availability">Request this room</a></div></div></article>
-      <article class="hotel-detail-panel"><h2>Property policies</h2><div class="hotel-policy-grid"><div><strong>Check-in</strong><span>Typically from 2:00 PM</span></div><div><strong>Check-out</strong><span>Typically by 11:00 AM</span></div><div><strong>Children</strong><span>Share ages for an accurate quote</span></div><div><strong>Cancellation</strong><span>Depends on dates and room plan</span></div></div><p class="hotel-detail-note">Final policies are supplied with the confirmed hotel quote and take precedence over these general guidelines.</p></article>
-      <article class="hotel-detail-panel"><h2>Location</h2><iframe class="hotel-location-map" src="https://www.google.com/maps?q={{ (hotel.name ~ ', ' ~ hotel.location)|urlencode }}&output=embed" title="Map showing {{ hotel.name }}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe><p class="hotel-detail-note">Exact pickup instructions are shared upon confirmation.</p></article>
+        <p class="ws-note">{{ hotel.stars }}-star property category — not a guest-review score.</p>
+      </section>
+      <section><h2>Facilities</h2><div class="ws-amenities">{% for facility in hotel.facilities %}<span><b>✓</b>{{ facility }}</span>{% endfor %}</div></section>
+      <section>
+        <h2>Room and rate</h2>
+        <div class="ws-room">
+          <div><h3>{{ hotel.room_name }}</h3><p>Comfortable room for two guests. Exact bedding, view, inclusions and cancellation terms are confirmed with your quote.</p><div class="ws-room-tags"><span>2 guests</span><span>Private bathroom</span><span>Breakfast options</span></div></div>
+          <div><small>Indicative rate from</small><strong>₹{{ "{:,}".format(hotel.price) }}</strong><em>per room / night</em><a class="ws-chip-btn" href="#availability">Request this room</a></div>
+        </div>
+      </section>
+      <section>
+        <h2>Property policies</h2>
+        <div class="ws-policy"><div><strong>Check-in</strong><span>Typically from 2:00 PM</span></div><div><strong>Check-out</strong><span>Typically by 11:00 AM</span></div><div><strong>Children</strong><span>Share ages for an accurate quote</span></div><div><strong>Cancellation</strong><span>Depends on dates and room plan</span></div></div>
+        <p class="ws-note">Final policies are supplied with the confirmed hotel quote and take precedence over these general guidelines.</p>
+      </section>
+      <section>
+        <h2>Location</h2>
+        <iframe class="ws-mapframe" src="https://www.google.com/maps?q={{ (hotel.name ~ ', ' ~ hotel.location)|urlencode }}&output=embed" title="Map showing {{ hotel.name }}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        <p class="ws-note">{{ hotel.location }}. Exact pickup instructions are shared upon confirmation.</p>
+      </section>
     </div>
 
-    <aside class="hotel-booking-card" id="availability">
-      <span>From</span><div class="hotel-booking-price">₹{{ "{:,}".format(hotel.price) }} <small>/ night</small></div>
-      <form action="/contact" method="get"><input type="hidden" name="hotel" value="{{ hotel.name }}"><label>Check in<input type="date" name="checkin" required></label><label>Check out<input type="date" name="checkout" required></label><div class="hotel-booking-pair"><label>Adults<input type="number" name="adults" min="1" max="50" step="1" value="2" inputmode="numeric" required aria-label="Number of adults"></label><label>Children<input type="number" name="children" min="0" max="30" step="1" value="0" inputmode="numeric" required aria-label="Number of children"></label></div><button class="btn" type="submit">Request availability</button></form>
-      <p>No payment is taken now. Our local team will verify the rate and contact you.</p><a class="hotel-call-link" href="tel:{{ contact.phone }}">Call {{ contact.phone }}</a>
-      <a class="hotel-whatsapp-link" href="https://api.whatsapp.com/send/?phone={{ contact.whatsapp }}&amp;text={{ ('Hello Waadi Kashmir Travels, I want to check availability for ' ~ hotel.name ~ ' in ' ~ hotel.location_short ~ '.')|urlencode }}&amp;type=phone_number&amp;app_absent=0" target="_blank" rel="noopener">Ask about this hotel on WhatsApp</a>
+    <aside class="ws-aside" id="availability">
+      <p class="ws-eyebrow">Check availability</p>
+      <div class="ws-aside-price" style="margin-top:.4rem"><small>From</small><strong>₹{{ "{:,}".format(hotel.price) }}</strong><span>per room / night · indicative</span></div>
+      <form action="/contact" method="get">
+        <input type="hidden" name="hotel" value="{{ hotel.name }}">
+        <div class="ws-pair"><label>Check in<input type="date" name="checkin" required></label><label>Check out<input type="date" name="checkout" required></label></div>
+        <div class="ws-pair"><label>Adults<input type="number" name="adults" min="1" max="50" step="1" value="2" inputmode="numeric" required></label><label>Children<input type="number" name="children" min="0" max="30" step="1" value="0" inputmode="numeric" required></label></div>
+        <button class="ws-btn ws-btn-gold" type="submit">Request availability</button>
+      </form>
+      <p class="ws-aside-note" style="margin-top:1rem">No payment is taken now. Our local team will verify the rate and contact you.</p>
+      <div class="ws-aside-links"><a href="tel:{{ contact.phone }}">Call {{ contact.phone }}</a><a href="https://api.whatsapp.com/send/?phone={{ contact.whatsapp }}&amp;text={{ ('Hello Waadi Kashmir Travels, I want to check availability for ' ~ hotel.name ~ ' in ' ~ hotel.location_short ~ '.')|urlencode }}&amp;type=phone_number&amp;app_absent=0" target="_blank" rel="noopener">Ask about this hotel on WhatsApp</a></div>
     </aside>
   </div>
 </section>
 
-<dialog class="hotel-lightbox" id="hotelLightbox"><button type="button" aria-label="Close gallery">×</button><img alt="Enlarged hotel gallery view"></dialog>
-<script>document.addEventListener('DOMContentLoaded',()=>{const box=document.getElementById('hotelLightbox'),img=box.querySelector('img');document.querySelectorAll('[data-gallery-image]').forEach(x=>x.addEventListener('click',()=>{img.src=x.dataset.galleryImage;box.showModal()}));box.querySelector('button').addEventListener('click',()=>box.close());box.addEventListener('click',e=>{if(e.target===box)box.close()})});</script>
-<script>document.addEventListener('DOMContentLoaded',()=>{const a=document.querySelector('#availability [name="checkin"]'),b=document.querySelector('#availability [name="checkout"]'),form=document.querySelector('#availability form'),today=new Date().toISOString().slice(0,10),blocked={{ hotel.blackouts|tojson }};a.min=today;b.min=today;a.addEventListener('change',()=>{b.min=a.value||today;if(b.value&&b.value<=a.value)b.value=''});form.addEventListener('submit',e=>{const hit=blocked.find(x=>a.value<=x.end&&b.value>=x.start);if(hit){e.preventDefault();alert(`This hotel is unavailable for part of those dates (${hit.start} to ${hit.end}). Please choose different dates or contact us for an alternative.`)}})});</script>
+<dialog class="ws-lightbox" id="hotelLightbox"><button type="button" aria-label="Close gallery">×</button><img alt="Enlarged hotel photo"></dialog>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const box = document.getElementById('hotelLightbox'), img = box.querySelector('img');
+  document.querySelectorAll('[data-gallery-image]').forEach(x => x.addEventListener('click', () => { img.src = x.dataset.galleryImage; box.showModal(); }));
+  box.querySelector('button').addEventListener('click', () => box.close());
+  box.addEventListener('click', e => { if (e.target === box) box.close(); });
+  const a = document.querySelector('#availability [name="checkin"]'), b = document.querySelector('#availability [name="checkout"]'), form = document.querySelector('#availability form'), today = new Date().toISOString().slice(0, 10), blocked = {{ hotel.blackouts|tojson }};
+  a.min = today; b.min = today; a.addEventListener('change', () => { b.min = a.value || today; if (b.value && b.value <= a.value) b.value = ''; });
+  form.addEventListener('submit', e => { const hit = blocked.find(x => a.value <= x.end && b.value >= x.start); if (hit) { e.preventDefault(); alert(`This hotel is unavailable for part of those dates (${hit.start} to ${hit.end}). Please choose different dates or contact us for an alternative.`); } });
+});
+</script>
 {% endblock %}

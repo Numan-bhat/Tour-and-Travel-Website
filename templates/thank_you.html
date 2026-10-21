@@ -1,14 +1,16 @@
-{% extends "layout.html" %}
+{% extends "site.html" %}
 {% block title %}Enquiry Received | Waadi Kashmir Travels{% endblock %}
 {% block meta_description %}Your Kashmir travel enquiry has been received by Waadi Kashmir Travels.{% endblock %}
 {% block robots %}noindex,nofollow{% endblock %}
 
 {% block content %}
-<section class="page-section">
-  <div class="container thank-you">
+<section class="ws-status">
+  <div class="ws-card ws-status-card">
+    <div class="ws-status-icon" aria-hidden="true">✓</div>
     <h1>Thank you, {{ name }}!</h1>
-    <p>Your message has been received. We will contact you soon with travel recommendations.</p>
-    <a class="btn btn-primary" href="/">Back to Home</a>
+    <p>Your trip brief has reached our Srinagar team. We will reply soon with route advice, stay options and a clear quotation.</p>
+    <p>Need us sooner? Message us on WhatsApp.</p>
+    <div class="ws-actions"><a class="ws-btn ws-btn-dark" href="/">Back to home</a><a class="ws-btn ws-btn-green" href="https://api.whatsapp.com/send/?phone={{ contact.whatsapp }}&amp;type=phone_number&amp;app_absent=0" target="_blank" rel="noopener">WhatsApp us</a></div>
   </div>
 </section>
 {% endblock %}

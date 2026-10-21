@@ -142,6 +142,22 @@ def protect_requests():
             abort(400, "Your session expired. Refresh the page and try again.")
 
 
+@app.template_filter("from_json")
+def from_json_filter(value):
+    if isinstance(value, list):
+        return value
+    try:
+        loaded = json.loads(value or "[]")
+    except (TypeError, json.JSONDecodeError):
+        return []
+    return loaded if isinstance(loaded, list) else []
+
+
+@app.template_filter("slugify")
+def slugify_filter(value):
+    return re.sub(r"[^a-z0-9]+", "-", str(value or "").lower()).strip("-")
+
+
 @app.url_defaults
 def version_static_assets(endpoint, values):
     # Static files are cached as immutable, so tie the CSS/JS URL to the file's mtime to bust caches on every edit.
@@ -1200,13 +1216,21 @@ def get_blog_posts():
 @app.route("/")
 def home():
     settings = {item.setting_key: item.setting_value for item in SiteSetting.query.all()}
+    tours = get_tours()
+    sample_tour = next((tour for tour in tours if tour.itinerary), tours[0] if tours else None)
+    try:
+        sample_itinerary = json.loads(sample_tour.itinerary or "[]") if sample_tour else []
+    except json.JSONDecodeError:
+        sample_itinerary = []
     return render_template(
         "index.html",
-        tours=get_tours(),
+        tours=tours,
+        sample_tour=sample_tour,
+        sample_itinerary=sample_itinerary,
         destinations=Destination.query.order_by(Destination.id).all(),
         blogs=get_blog_posts()[:3],
-        featured_hotels=Hotel.query.filter_by(active=True, featured=True).order_by(Hotel.id).limit(4).all(),
-        reviews=GuestReview.query.filter_by(published=True).order_by(GuestReview.created_at.desc()).limit(3).all(),
+        stays=Hotel.query.filter_by(active=True).order_by(Hotel.featured.desc(), Hotel.id).limit(6).all(),
+        reviews=GuestReview.query.filter_by(published=True).order_by(GuestReview.created_at.desc()).limit(4).all(),
         settings=settings,
         contact=get_contact_info(),
         advisor_tours=[{"id": t.id, "title": t.title, "duration": t.duration, "price": t.price, "description": t.description, "image_url": t.image_url} for t in get_tours()],

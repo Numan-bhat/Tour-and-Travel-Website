@@ -1,18 +1,310 @@
-{% extends "layout.html" %}
+{% extends "site.html" %}
 {% block title %}Private Kashmir Journeys | Waadi Kashmir Travels{% endblock %}
 {% block meta_description %}Private Kashmir holidays designed by local experts, with handpicked stays, reliable cabs and personal support from Srinagar.{% endblock %}
+{% block body_class %} ws-home{% endblock %}
+{% block preload %}<link rel="preload" as="image" href="{{ url_for('static', filename='uploads/kashmir-2._20260811072824.jpg') }}" fetchpriority="high" />{% endblock %}
 {% block content %}
-<section class="premium-hero"><img class="premium-hero-bg" src="{{ url_for('static', filename='uploads/kashmir-best-hero.webp') }}" alt="Snow-covered Kashmir mountains and river" fetchpriority="high"><div class="premium-hero-shade"></div><div class="container premium-hero-inner"><div class="premium-hero-copy"><p class="premium-kicker">Private journeys · Local expertise · Kashmir</p><h1>{{ settings.get('hero_title') or 'Kashmir, designed around you.' }}</h1><p class="premium-lead">{{ settings.get('hero_text') or 'Thoughtfully planned private journeys with beautiful stays, a dedicated cab and genuine local support from arrival to farewell.' }}</p><div class="premium-actions"><a class="premium-btn premium-btn-gold" href="#trip-planner">Design my journey</a><a class="premium-btn premium-btn-ghost" href="/tours">Explore packages</a></div><div class="premium-hero-proof"><span><b>Local</b> Srinagar-based team</span><span><b>Private</b> cabs & itineraries</span><span><b>Personal</b> WhatsApp support</span></div></div></div></section>
-<section class="premium-trust" aria-label="Why travellers trust us"><div class="container premium-trust-grid"><div><strong>Srinagar</strong><span>Local Kashmir team</span></div><div><strong>Flexible</strong><span>Customisable journeys</span></div><div><strong>On trip</strong><span>Local travel support</span></div><div><strong>Direct</strong><span>Clear written quotations</span></div></div></section>
-<section class="premium-advisor"><div class="container premium-advisor-grid"><div class="premium-advisor-mark" aria-hidden="true">WK</div><div><p class="premium-kicker dark">Your local travel specialist</p><h2>Plan with someone who knows Kashmir.</h2><p>Speak directly with our Srinagar-based team for practical route advice, suitable stays and a journey shaped around your dates and group.</p></div><div class="premium-advisor-actions"><a href="tel:{{ contact.phone }}">Call {{ contact.phone }}</a><a href="https://api.whatsapp.com/send/?phone={{ contact.whatsapp }}&amp;text={{ 'Hello Waadi Kashmir Travels, I would like help planning a Kashmir journey.'|urlencode }}&amp;type=phone_number&amp;app_absent=0" target="_blank" rel="noopener">Message a specialist</a></div></div></section>
-<section class="premium-intro"><div class="container premium-split"><div><p class="premium-kicker dark">The Waadi difference</p><h2>Travel deeper. Leave the details to us.</h2><p class="premium-copy">From your first airport welcome to your final drive through the valley, every detail is arranged around your pace, preferences and people.</p><div class="premium-feature-list"><div><i>01</i><span><b>Handpicked stays</b>Hotels and houseboats selected for comfort, location and hospitality.</span></div><div><i>02</i><span><b>Your own journey</b>Flexible days, private transfers and experiences that fit your travel style.</span></div><div><i>03</i><span><b>People on the ground</b>A local team you can reach before and throughout your Kashmir holiday.</span></div></div></div><figure class="premium-editorial-image premium-editorial-poster"><img src="{{ url_for('static', filename='images/kashmir-luxury-tour-front.webp') }}" alt="Kashmir luxury tour package with five-star houseboat, hotels, private cab and scenic destinations" loading="lazy" decoding="async"><figcaption>Luxury Kashmir, thoughtfully arranged</figcaption></figure></div></section>
-<section class="premium-packages"><div class="container"><div class="premium-heading"><div><p class="premium-kicker dark">Curated for you</p><h2>Signature Kashmir journeys</h2></div><a href="/tours">View all packages <span>→</span></a></div><div class="premium-package-grid">{% for tour in tours[:6] %}<article class="premium-package-card"><a class="premium-card-image{% if tour.id == 6 %} poster-fit{% endif %}" href="/tour/{{ tour.id }}"><img src="{{ tour.image_url }}" alt="{{ tour.title }}" loading="lazy" decoding="async"><span class="premium-card-number">{{ '%02d'|format(loop.index) }}</span><span class="premium-card-duration">{{ tour.duration }}</span></a>{% if tour.id == 6 %}<small class="poster-disclaimer">Promotional artwork. Flights, meals, hotels and prices apply only when included in your written quotation.</small>{% endif %}<div class="premium-card-body"><p class="premium-card-label"><span></span> Private Kashmir journey</p><h3><a href="/tour/{{ tour.id }}">{{ tour.title }}</a></h3><p class="premium-card-description">{{ tour.description|truncate(120) }}</p><div class="premium-card-meta"><span>Private cab</span><span>Curated stays</span><span>Local support</span><span>Season-aware</span></div><div class="premium-card-footer"><div><small>Journey investment</small><strong>{% if tour.price %}From {{ tour.price }}{% else %}Tailored quotation{% endif %}</strong></div><a href="/tour/{{ tour.id }}"><span>Explore journey</span><b aria-hidden="true">→</b></a></div></div></article>{% endfor %}</div></div></section>
-<section class="premium-experiences"><div class="container"><div class="premium-heading light"><div><p class="premium-kicker">Beyond the itinerary</p><h2>Signature experiences</h2></div><p>Small moments, beautifully arranged.</p></div><div class="experience-grid"><article class="experience-large"><img src="{{ url_for('static', filename='uploads/houseboat_20260811075116.webp') }}" alt="Kashmir houseboat stay" loading="lazy" decoding="async"><div><span>Stay</span><h3>A night on Dal Lake</h3><p>Wake to still water, mountain light and warm Kashmiri hospitality.</p></div></article><article><img src="{{ url_for('static', filename='uploads/sonmarg_20260811073028.jpg') }}" alt="Snow experience in Sonamarg" loading="lazy" decoding="async"><div><span>Explore</span><h3>Private alpine days</h3></div></article><article><img src="{{ url_for('static', filename='uploads/honeymoon_20260811075612.jpg') }}" alt="Romantic Kashmir journey" loading="lazy" decoding="async"><div><span>Celebrate</span><h3>Romance in the valley</h3></div></article></div></div></section>
-<section class="premium-destinations"><div class="container"><div class="premium-heading"><div><p class="premium-kicker dark">Where will you go?</p><h2>Four moods of Kashmir</h2></div><a href="/destinations">Explore destinations →</a></div><div class="premium-destination-grid">{% for dest in destinations[:4] %}<a href="/destinations"><img src="{{ dest.image_url }}" alt="{{ dest.name }}" loading="lazy"><span>{{ '%02d'|format(loop.index) }}</span><h3>{{ dest.name }}</h3><p>{{ dest.description|truncate(85) }}</p></a>{% endfor %}</div></div></section>
-<section class="smart-trip-advisor" id="trip-planner"><div class="container"><div class="advisor-heading"><p class="premium-kicker dark">Your Kashmir trip, matched to you</p><h2>Find your best-fit package</h2><p>Tell us what matters. Get three clear recommendations: lowest cost, best overall fit, and a luxury upgrade.</p></div><div class="advisor-layout"><form class="advisor-form" id="packageAdvisorForm"><label>How many days?<select name="days"><option value="5">4–5 days</option><option value="6" selected>6 days</option><option value="7">7 days</option><option value="8">8 days</option><option value="12">9+ days</option></select></label><label>Group size<select name="guests"><option value="2">2 travellers</option><option value="4" selected>3–4 travellers</option><option value="6">5–6 travellers</option><option value="8">7+ travellers</option></select></label><label>Travel style<select name="style"><option value="balanced">Best overall value</option><option value="budget">Keep costs low</option><option value="luxury">Luxury & comfort</option><option value="adventure">Adventure</option><option value="romantic">Romantic getaway</option></select></label><label>Budget per person <span>(optional)</span><select name="budget"><option value="0">I’m flexible</option><option value="20000">Up to ₹20,000</option><option value="30000">Up to ₹30,000</option><option value="45000">Up to ₹45,000</option><option value="60000">Up to ₹60,000</option></select></label><label class="advisor-interests">What would you love to do?<span class="interest-options"><label><input type="checkbox" name="interest" value="family"> Family time</label><label><input type="checkbox" name="interest" value="lake"> Dal Lake</label><label><input type="checkbox" name="interest" value="snow"> Snow & mountains</label><label><input type="checkbox" name="interest" value="adventure"> Adventure</label></span></label><button type="submit">Analyse my trip <span aria-hidden="true">→</span></button></form><div class="advisor-results" id="packageAdvisorResults" aria-live="polite"><div class="advisor-empty"><span aria-hidden="true">✦</span><h3>Your recommendations will appear here</h3><p>We’ll compare your preferences with our active Kashmir packages and explain the trade-offs.</p></div></div></div><p class="advisor-note">Package prices are starting prices shown on the website and may be per person or package-specific. Final costs depend on dates, inclusions and availability. Our local team confirms every quote.</p><details class="advisor-enquiry"><summary>Ready to ask our Srinagar team for a tailored quote?</summary><form action="/contact" method="post" class="premium-planner-form"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><div class="planner-fields"><label>Your name<input name="name" autocomplete="name" required placeholder="Your name"></label><label>WhatsApp number<input name="phone" type="tel" autocomplete="tel" required placeholder="+91 98765 43210"></label><label>Email address<input name="email" type="email" autocomplete="email" required placeholder="you@example.com"></label><label>Arrival date<input name="arrival_date" type="date" required></label><label>Who is travelling?<select name="guests" required><option value="2">2 travellers</option><option value="4" selected>3–4 travellers</option><option value="6">5–6 travellers</option><option value="8">7+ travellers</option></select></label><label>Stay style<select name="service"><option>Comfort</option><option>Premium</option><option>Luxury</option><option>Mix of stays</option></select></label></div><textarea name="message" rows="3" placeholder="Your preferred package and anything else we should know"></textarea><button type="submit">Request a personalised quote <span>→</span></button><small>No obligation. Our local travel expert will personally follow up.</small></form></details></div></section>
+{% set slides = [
+  {'kicker': 'Srinagar, Kashmir', 'title': 'Dal Lake', 'script': 'where the valley wakes on water', 'text': 'Shikara rides at first light, houseboat evenings and the Zabarwan range mirrored in still water.', 'image': 'uploads/kashmir-2._20260811072824.jpg', 'link': '/destinations#srinagar'},
+  {'kicker': 'Lidder Valley, Kashmir', 'title': 'Pahalgam', 'script': 'the valley of shepherds', 'text': 'Pine forests, river meadows and slow walks through Betaab and Aru valleys.', 'image': 'uploads/pahalgam_20260811081532.jpg', 'link': '/destinations#pahalgam'},
+  {'kicker': 'Sindh Valley, Kashmir', 'title': 'Sonamarg', 'script': 'the meadow of gold', 'text': 'Glacier views, alpine streams and the gateway road to Ladakh.', 'image': 'uploads/sonmarg_20260811073028.jpg', 'link': '/destinations#sonamarg'},
+  {'kicker': 'December to February', 'title': 'Winter', 'script': 'Kashmir under snow', 'text': 'Snowbound villages, warm kahwa and Gulmarg slopes — planned around road and weather conditions.', 'image': 'uploads/kashmir-best-hero.webp', 'link': '/tours?q=gulmarg'},
+  {'kicker': 'Ladakh', 'title': 'Pangong', 'script': 'a lake of a hundred blues', 'text': 'High passes, Nubra dunes and the shifting colours of Pangong Tso.', 'image': 'uploads/2999_20190305160539_20260811073700.jpg', 'link': '/destinations#pangong-lake'}
+] %}
+
+<section class="ws-hero" data-slider aria-roledescription="carousel" aria-label="Kashmir destinations">
+  <h1 class="ws-sr">{{ settings.get('hero_title') or 'Kashmir, designed around you.' }}</h1>
+  {% for slide in slides %}
+  <div class="ws-hero-slide{% if loop.first %} is-active{% endif %}" data-slide aria-roledescription="slide" aria-label="{{ loop.index }} of {{ slides|length }}" {% if not loop.first %}aria-hidden="true"{% endif %}>
+    <img src="{{ url_for('static', filename=slide.image) }}" alt="" {% if loop.first %}fetchpriority="high"{% else %}loading="lazy"{% endif %} decoding="async">
+  </div>
+  {% endfor %}
+  <div class="ws-hero-shade"></div>
+  <div class="ws-wrap ws-hero-inner">
+    <div class="ws-hero-copy" aria-live="polite">
+      {% for slide in slides %}
+      <div class="ws-hero-text{% if loop.first %} is-active{% endif %}" data-slide-text {% if not loop.first %}hidden{% endif %}>
+        <p class="ws-kicker"><span></span>{{ slide.kicker }}</p>
+        <h2 class="ws-hero-title">{{ slide.title }}</h2>
+        <p class="ws-hero-script">{{ slide.script }}</p>
+        <p class="ws-hero-lead">{{ slide.text }}</p>
+        <div class="ws-hero-actions"><a class="ws-btn ws-btn-gold" href="{{ slide.link }}">Explore now</a><a class="ws-btn ws-btn-line" href="/contact#quote">Plan with us</a></div>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="ws-hero-cards" role="tablist" aria-label="Choose a destination">
+      {% for slide in slides %}
+      <button class="ws-hero-card{% if loop.first %} is-active{% endif %}" type="button" role="tab" data-goto="{{ loop.index0 }}" aria-selected="{{ 'true' if loop.first else 'false' }}">
+        <img src="{{ url_for('static', filename=slide.image) }}" alt="" loading="lazy" decoding="async">
+        <span><small>{{ slide.kicker }}</small><b>{{ slide.title }}</b><em>{{ slide.script }}</em></span>
+      </button>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="ws-wrap ws-hero-foot">
+    <div class="ws-hero-dots">{% for slide in slides %}<button type="button" data-goto="{{ loop.index0 }}" aria-label="Show {{ slide.title }}"{% if loop.first %} class="is-active"{% endif %}></button>{% endfor %}</div>
+    <p class="ws-hero-count"><b data-current>01</b><span></span>{{ '%02d'|format(slides|length) }}</p>
+  </div>
+</section>
+
+<section class="ws-map-section" data-places>
+  <div class="ws-map-bg" aria-hidden="true">{% for dest in destinations %}<img src="{{ dest.image_url }}" alt="" loading="lazy" decoding="async" data-place-bg="{{ loop.index0 }}"{% if loop.first %} class="is-active"{% endif %}>{% endfor %}</div>
+  <div class="ws-wrap ws-map-grid">
+    <div>
+      <p class="ws-eyebrow">Places to visit in</p>
+      <h2 class="ws-display">Kashmir &amp;<br>Ladakh</h2>
+      <p class="ws-map-hint">Tap a pin or a name to explore each destination</p>
+      <div class="ws-chips" role="tablist" aria-label="Destinations">
+        {% for dest in destinations %}<button type="button" role="tab" data-place="{{ loop.index0 }}" aria-selected="{{ 'true' if loop.first else 'false' }}"{% if loop.first %} class="is-active"{% endif %}>{{ dest.name }}</button>{% endfor %}
+      </div>
+      {% set pins = {'gulmarg': (62, 168), 'srinagar': (112, 158), 'doodhpathri': (86, 214), 'pahalgam': (168, 186), 'sonamarg': (152, 108), 'leh': (286, 150), 'nubra valley': (272, 70), 'pangong lake': (346, 214)} %}
+      <svg class="ws-map" viewBox="0 0 400 290" role="img" aria-label="Map of Kashmir and Ladakh destinations">
+        <path class="ws-map-land" d="M28 150 C40 96 92 62 150 58 C196 40 238 26 292 34 C346 42 384 92 382 150 C380 214 354 262 300 268 C246 276 214 246 170 252 C120 262 70 258 44 224 C30 206 22 176 28 150Z"/>
+        <path class="ws-map-ridge" d="M210 46 C222 110 214 170 232 262"/>
+        <text class="ws-map-region" x="36" y="122">KASHMIR</text>
+        <text class="ws-map-region" x="300" y="112">LADAKH</text>
+        <path class="ws-map-route" d="M112 158 L62 168 M112 158 L86 214 M112 158 L168 186 M112 158 L152 108 L286 150 L272 70 M286 150 L346 214"/>
+        {% for dest in destinations %}{% set pin = pins.get(dest.name|lower) %}{% if pin %}
+        <g class="ws-pin{% if loop.first %} is-active{% endif %}" data-place="{{ loop.index0 }}" transform="translate({{ pin[0] }} {{ pin[1] }})" tabindex="0" role="button" aria-label="{{ dest.name }}">
+          <circle class="ws-pin-pulse" r="13"/><circle class="ws-pin-dot" r="6.5"/><text y="-14">{{ dest.name|upper }}</text>
+        </g>{% endif %}{% endfor %}
+        <g class="ws-map-north" transform="translate(360 40)"><circle r="12"/><path d="M0 -7 L4 5 L0 2 L-4 5Z"/><text y="24">N</text></g>
+      </svg>
+    </div>
+    <div class="ws-place-panels">
+      {% for dest in destinations %}
+      <article class="ws-place{% if loop.first %} is-active{% endif %}" data-place-panel="{{ loop.index0 }}" {% if not loop.first %}hidden{% endif %}>
+        <span class="ws-place-bar"></span>
+        <h3>{{ dest.name }}</h3>
+        <p class="ws-place-region">{{ dest.region }} · Best {{ dest.best_time }}</p>
+        <p class="ws-place-text">{{ dest.description }}</p>
+        <ul>{% for item in (dest.highlights|from_json)[:4] %}<li>{{ item }}</li>{% endfor %}</ul>
+        <a class="ws-btn ws-btn-gold" href="/destinations#{{ dest.name|slugify }}">View destination guide <span aria-hidden="true">→</span></a>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="ws-dark ws-trips">
+  <div class="ws-wrap">
+    <p class="ws-eyebrow">Curated journeys</p>
+    <h2 class="ws-display">Explore our trips</h2>
+    <p class="ws-script-sub">Private itineraries, shaped around your pace</p>
+  </div>
+  <div class="ws-wrap ws-row-head"><h3>Kashmir &amp; Ladakh</h3><div class="ws-arrows"><button type="button" data-scroll="-1" aria-label="Previous trips">‹</button><button type="button" data-scroll="1" aria-label="Next trips">›</button></div></div>
+  <div class="ws-rail" data-rail>
+    {% for tour in tours %}
+    <article class="ws-trip">
+      <img src="{{ tour.image_url }}" alt="{{ tour.title }}" loading="lazy" decoding="async">
+      <span class="ws-badge">{{ tour.duration }}</span>
+      <div>
+        <small>{{ 'Ladakh' if 'ladakh' in tour.title|lower else 'Kashmir' }}</small>
+        <h4>{{ tour.title }}</h4>
+        <p>{{ tour.description|truncate(92) }}</p>
+        <a class="ws-btn-ghost" href="/tour/{{ tour.id }}">Explore trip</a>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  <div class="ws-center"><a class="ws-btn ws-btn-outline-light" href="/tours">View all packages</a></div>
+</section>
+
+<section class="ws-section ws-journey-tabs" data-tabs>
+  <div class="ws-wrap">
+    <h2 class="ws-display ws-center-text">Start your journey</h2>
+    <div class="ws-tabs" role="tablist">
+      <button type="button" role="tab" aria-selected="true" class="is-active" data-tab="0">By traveller</button>
+      <button type="button" role="tab" aria-selected="false" data-tab="1">By season</button>
+      <button type="button" role="tab" aria-selected="false" data-tab="2">By destination</button>
+    </div>
+    {% set traveller = [
+      ('Family', 'Easy pace, big memories', 'uploads/kashmir-delight_20260811075539.webp', '/tours?traveler=family'),
+      ('Honeymoon', 'Houseboats & quiet views', 'uploads/honeymoon_20260811075612.jpg', '/tours?traveler=honeymoon'),
+      ('Adventure', 'Treks, snow & high passes', 'images/amarnath-yatra-baltal-hero.webp', '/tours?traveler=adventure'),
+      ('Luxury', 'Palaces, spas & 5-star stays', 'images/lalit-grand-palace-gardens.jpg', '/tours?traveler=luxury'),
+      ('Ladakh', 'Monasteries & mountain lakes', 'uploads/GettyImages-469085179-5c6ce9b346e0fb0001e6e812_20260811073750.jpg', '/tours?q=ladakh')
+    ] %}
+    {% set seasons = [
+      ('Spring', 'Mar – May · tulips & blossom', 'uploads/kashmir-2._20260811072824.jpg'),
+      ('Summer', 'Jun – Aug · meadows & treks', 'uploads/pahalgam_20260811081532.jpg'),
+      ('Autumn', 'Sep – Nov · chinar gold', 'uploads/Doodhpathri_20260811073446.webp'),
+      ('Winter', 'Dec – Feb · snow season', 'uploads/kashmir-best-hero.webp'),
+      ('Ladakh season', 'May – Sep · roads open', 'uploads/2999_20190305160539_20260811073700.jpg')
+    ] %}
+    <div class="ws-tiles is-active" data-tab-panel="0">{% for name, note, img, link in traveller %}<a class="ws-tile" href="{{ link }}"><img src="{{ url_for('static', filename=img) }}" alt="" loading="lazy" decoding="async"><b>{{ name }}</b><small>{{ note }}</small></a>{% endfor %}</div>
+    <div class="ws-tiles" data-tab-panel="1" hidden>{% for name, note, img in seasons %}<a class="ws-tile" href="/contact?season={{ name|urlencode }}#quote"><img src="{{ url_for('static', filename=img) }}" alt="" loading="lazy" decoding="async"><b>{{ name }}</b><small>{{ note }}</small></a>{% endfor %}</div>
+    <div class="ws-tiles" data-tab-panel="2" hidden>{% for dest in destinations[:5] %}<a class="ws-tile" href="/destinations#{{ dest.name|slugify }}"><img src="{{ dest.image_url }}" alt="" loading="lazy" decoding="async"><b>{{ dest.name }}</b><small>{{ dest.region }}</small></a>{% endfor %}</div>
+    <div class="ws-center"><a class="ws-btn ws-btn-dark" href="/tours">View more</a></div>
+  </div>
+</section>
+
+<section class="ws-section ws-mist ws-concierge">
+  <div class="ws-wrap ws-concierge-grid">
+    <div>
+      <p class="ws-pill"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5z"/></svg>Private travel desk in Srinagar</p>
+      <h2 class="ws-serif">Kashmir, designed around <em>you.</em></h2>
+      <span class="ws-rule"></span>
+      <p class="ws-lead">{{ settings.get('hero_text') or 'Thoughtfully planned private journeys with beautiful stays, a dedicated cab and genuine local support from arrival to farewell.' }}</p>
+      <div class="ws-actions"><a class="ws-btn ws-btn-dark" href="#trip-planner">Start planning</a>{% if sample_tour %}<a class="ws-btn ws-btn-white" href="/tour/{{ sample_tour.id }}#itinerary">See a sample itinerary →</a>{% endif %}</div>
+      <div class="ws-mini-features">
+        <div><span class="ws-icon-box dark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-6 8 6v9H4z"/><path d="M10 20v-5h4v5"/></svg></span><b>Handpicked stays</b><small>Hotels &amp; houseboats</small></div>
+        <div><span class="ws-icon-box dark"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg></span><b>Your own dates</b><small>Flexible itineraries</small></div>
+        <div><span class="ws-icon-box dark"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 4a3 3 0 0 1 0 6M21 20c0-2.8-1.8-5-4-5.7"/></svg></span><b>On-ground support</b><small>Reachable all trip</small></div>
+      </div>
+    </div>
+    <div class="ws-stack">
+      {% if sample_tour %}
+      <article class="ws-card ws-itin-card">
+        <header><img src="{{ sample_tour.image_url }}" alt="" loading="lazy"><div><b>{{ sample_tour.title }}</b><small>{{ sample_tour.duration }} · Kashmir Valley</small></div></header>
+        <ol>{% for day in sample_itinerary[:5] %}<li><span>{{ '%02d'|format(day.day|int if day.day else loop.index) }}</span><b>Day {{ day.day or loop.index }}</b><em>{{ day.title or 'Kashmir sightseeing' }}</em></li>{% endfor %}</ol>
+        <a href="/tour/{{ sample_tour.id }}#itinerary">View full itinerary →</a>
+      </article>
+      {% endif %}
+      <article class="ws-card ws-pref-card"><header><b>Your preferences</b><a href="#trip-planner">Edit</a></header><div><span>Houseboat night</span><span>Alpine valleys</span><span>Private cab</span></div></article>
+      <article class="ws-card ws-route-card">
+        <header><div><b>Your route</b><small>Srinagar → Gulmarg → Pahalgam → Sonamarg</small></div><a href="/contact#quote">Customise →</a></header>
+        <svg viewBox="0 0 300 70" aria-hidden="true"><path d="M20 44 C70 10 110 60 150 34 C190 8 230 58 280 30"/><circle cx="20" cy="44" r="6"/><circle cx="110" cy="40" r="6"/><circle cx="190" cy="22" r="6"/><circle cx="280" cy="30" r="6"/></svg>
+        <ul><li><b>Srinagar</b>2 nights</li><li><b>Gulmarg</b>1 night</li><li><b>Pahalgam</b>2 nights</li><li><b>Sonamarg</b>day trip</li></ul>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="ws-section ws-advisor" id="trip-planner">
+  <div class="ws-wrap">
+    <div class="ws-head-row"><div><p class="ws-eyebrow dark">Your Kashmir trip, matched to you</p><h2 class="ws-title">Find your best-fit package</h2></div><p>Tell us what matters and get three clear options: lowest cost, best overall fit and a luxury upgrade.</p></div>
+    <div class="ws-advisor-grid">
+      <form class="ws-card ws-advisor-form" id="packageAdvisorForm">
+        <label>How many days?<select name="days"><option value="5">4–5 days</option><option value="6" selected>6 days</option><option value="7">7 days</option><option value="8">8 days</option><option value="12">9+ days</option></select></label>
+        <label>Group size<select name="guests"><option value="2">2 travellers</option><option value="4" selected>3–4 travellers</option><option value="6">5–6 travellers</option><option value="8">7+ travellers</option></select></label>
+        <label>Travel style<select name="style"><option value="balanced">Best overall value</option><option value="budget">Keep costs low</option><option value="luxury">Luxury &amp; comfort</option><option value="adventure">Adventure</option><option value="romantic">Romantic getaway</option></select></label>
+        <label>Budget per person <span>(optional)</span><select name="budget"><option value="0">I’m flexible</option><option value="20000">Up to ₹20,000</option><option value="30000">Up to ₹30,000</option><option value="45000">Up to ₹45,000</option><option value="60000">Up to ₹60,000</option></select></label>
+        <fieldset><legend>What would you love to do?</legend><label><input type="checkbox" name="interest" value="family"> Family time</label><label><input type="checkbox" name="interest" value="lake"> Dal Lake</label><label><input type="checkbox" name="interest" value="snow"> Snow &amp; mountains</label><label><input type="checkbox" name="interest" value="adventure"> Adventure</label></fieldset>
+        <button class="ws-btn ws-btn-gold" type="submit">Analyse my trip <span aria-hidden="true">→</span></button>
+      </form>
+      <div class="ws-advisor-results" id="packageAdvisorResults" aria-live="polite"><div class="advisor-empty"><span aria-hidden="true">✦</span><h3>Your recommendations will appear here</h3><p>We compare your preferences with our current Kashmir packages and explain the trade-offs.</p></div></div>
+    </div>
+    <p class="ws-fineprint">Package prices are starting prices shown on the website. Final costs depend on dates, inclusions and availability — our local team confirms every quote.</p>
+    <details class="advisor-enquiry ws-card">
+      <summary>Ready to ask our Srinagar team for a tailored quote?</summary>
+      <form action="/contact" method="post" class="premium-planner-form ws-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <div class="ws-form-grid">
+          <label>Your name<input name="name" autocomplete="name" required placeholder="Your name"></label>
+          <label>WhatsApp number<input name="phone" type="tel" autocomplete="tel" required placeholder="+91 98765 43210"></label>
+          <label>Email address<input name="email" type="email" autocomplete="email" required placeholder="you@example.com"></label>
+          <label>Arrival date<input name="arrival_date" type="date" required></label>
+          <label>Who is travelling?<select name="guests" required><option value="2">2 travellers</option><option value="4" selected>3–4 travellers</option><option value="6">5–6 travellers</option><option value="8">7+ travellers</option></select></label>
+          <label>Stay style<select name="service"><option>Comfort</option><option>Premium</option><option>Luxury</option><option>Mix of stays</option></select></label>
+        </div>
+        <label>Anything else?<textarea name="message" rows="3" placeholder="Your preferred package and anything else we should know"></textarea></label>
+        <button class="ws-btn ws-btn-dark" type="submit">Request a personalised quote <span aria-hidden="true">→</span></button>
+        <small>No obligation. A local travel expert will personally follow up.</small>
+      </form>
+    </details>
+  </div>
+</section>
 <script type="application/json" id="advisorTourData">{{ advisor_tours|tojson }}</script>
-{% if featured_hotels %}<section class="premium-stays"><div class="container"><div class="premium-heading"><div><p class="premium-kicker dark">Sleep beautifully</p><h2>Handpicked stays</h2></div><a href="/hotels">Explore all hotels →</a></div><div class="premium-stay-grid">{% for hotel in featured_hotels %}<article><img src="{{ hotel.image_url }}" alt="{{ hotel.name }}" loading="lazy"><div><span>{{ hotel.location_short }} · {{ hotel.stars }} star</span><h3>{{ hotel.name }}</h3><p>From <strong>₹{{ '{:,}'.format(hotel.price) }}</strong> per night</p><a href="/hotel/{{ hotel.slug }}/">View stay →</a></div></article>{% endfor %}</div></div></section>{% endif %}
-<section class="premium-reviews" id="reviews"><div class="container"><div class="premium-heading"><div><p class="premium-kicker dark">Words from our guests</p><h2>Experiences worth remembering</h2></div><p>Real feedback from travellers who explored Kashmir with our local team.</p></div>{% if request.args.get('review_submitted') %}<p class="review-form-success" role="status">Thank you for sharing your experience. Our team will review it before publishing.</p>{% endif %}{% if reviews %}<div class="premium-review-grid">{% for review in reviews %}<article><div class="review-stars" aria-label="{{ review.rating }} out of 5 stars">{{ '★' * review.rating }}</div><blockquote>“{{ review.review_text }}”</blockquote><strong>{{ review.guest_name }}</strong><span>{{ review.location or review.trip_label or 'Kashmir journey' }}</span></article>{% endfor %}</div>{% else %}<p class="premium-reviews-empty">We’re gathering feedback from our guests. Be the first to share your experience.</p>{% endif %}<div class="premium-review-actions"><a class="premium-google-review-link" href="{{ google_reviews_url or 'https://www.google.com/search?q=Waadi+Kashmir+Travels+reviews' }}" target="_blank" rel="noopener"><span class="google-g" aria-hidden="true">G</span><span><b>Google Reviews</b><small>Read more guest experiences</small></span><span aria-hidden="true">↗</span></a><a class="premium-review-link" href="/contact">Ask for recent guest references →</a></div><div class="public-review-form-wrap"><div><p class="premium-kicker dark">Have you travelled with us?</p><h3>Share your Kashmir story</h3><p>Your review helps other travellers plan with confidence. Reviews are checked by our team before they appear here.</p></div><form class="public-review-form" action="/reviews" method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><label>Your name<input name="guest_name" autocomplete="name" maxlength="120" required></label><div class="review-form-row"><label>City or country <span>(optional)</span><input name="location" maxlength="120" placeholder="e.g. Delhi"></label><label>Trip type <span>(optional)</span><input name="trip_label" maxlength="120" placeholder="e.g. Family holiday"></label></div><label>Your rating<select name="rating" required><option value="5">★★★★★ — Loved it</option><option value="4">★★★★☆ — Great</option><option value="3">★★★☆☆ — Good</option><option value="2">★★☆☆☆ — Could be better</option><option value="1">★☆☆☆☆ — Poor</option></select></label><label>Your review<textarea name="review_text" rows="4" minlength="10" maxlength="2000" required placeholder="Tell us what you enjoyed about your Kashmir journey..."></textarea></label><div class="review-honeypot" aria-hidden="true"><label>Leave this field empty<input name="website" tabindex="-1" autocomplete="off"></label></div><button type="submit">Submit my review <span aria-hidden="true">→</span></button></form></div></div></section>
-<section class="premium-journal"><div class="container"><div class="premium-heading"><div><p class="premium-kicker dark">From our travel journal</p><h2>Know before you go</h2></div><a href="/blogs">Read all guides →</a></div><div class="premium-journal-grid">{% for blog in blogs %}<article><a class="premium-journal-image" href="{{ url_for('blog_detail', slug=blog.slug) }}"><img src="{{ blog.image_url }}" alt="{{ blog.title }}" loading="lazy"></a><div class="premium-journal-body"><span>{{ blog.category }}</span><h3><a href="{{ url_for('blog_detail', slug=blog.slug) }}">{{ blog.title }}</a></h3><p>{{ blog.excerpt }}</p></div></article>{% endfor %}</div></div></section>
-<section class="premium-final-cta"><div class="container"><p class="premium-kicker">Begin your Kashmir story</p><h2>A beautiful journey starts with a conversation.</h2><div class="premium-actions"><a class="premium-btn premium-btn-gold" href="#trip-planner">Plan my journey</a><a class="premium-btn premium-btn-ghost" href="https://api.whatsapp.com/send/?phone={{ contact.whatsapp }}&amp;text={{ 'Hello Waadi Kashmir Travels, I would like help planning my Kashmir journey.'|urlencode }}&amp;type=phone_number&amp;app_absent=0" target="_blank" rel="noopener">Chat on WhatsApp</a></div></div></section>
+
+<section class="ws-banner">
+  <img src="{{ url_for('static', filename='uploads/kashmir-3._20260811072903.jpg') }}" alt="" loading="lazy" decoding="async">
+  <div class="ws-banner-copy"><h2>Kashmir awaits</h2><p><b>01</b><a href="/tours">Tours</a><a href="/destinations">Explore</a><a href="/contact#quote">Plan</a></p></div>
+</section>
+
+<section class="ws-dark ws-experiences">
+  <div class="ws-wrap">
+    <h2 class="ws-title light ws-center-text">Experiences travellers love</h2>
+    <div class="ws-exp-grid">
+      {% set experiences = [
+        ('A Wazwan feast', 'The valley’s royal multi-course meal', 'images/kashmiri-cuisine-guide.webp', '/blog/traditional-kashmiri-cuisine-food-guide'),
+        ('Old-city craft bazaars', 'Pashmina, papier-mâché & saffron', 'images/things-to-buy-in-kashmir.webp', '/blog/things-to-buy-in-kashmir-shopping-guide'),
+        ('Doodhpathri meadows', 'Quiet pastures off the tourist trail', 'uploads/Doodhpathri_20260811073446.webp', '/destinations#doodhpathri'),
+        ('Camel trails of Nubra', 'Sand dunes beneath the Karakoram', 'uploads/GettyImages-469085179-5c6ce9b346e0fb0001e6e812_20260811073750.jpg', '/destinations#nubra-valley')
+      ] %}
+      {% for title, note, img, link in experiences %}
+      <a class="ws-exp" href="{{ link }}"><img src="{{ url_for('static', filename=img) }}" alt="" loading="lazy" decoding="async"><span><small>{{ note }}</small><b>{{ title }}</b></span></a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% if stays %}
+<section class="ws-section ws-stays">
+  <div class="ws-wrap">
+    <h2 class="ws-serif ws-center-text">Sleep beautifully<br>in the valley.</h2>
+    <p class="ws-sub ws-center-text">From heritage palaces to mountain resorts — handpicked stays across Kashmir, confirmed by our team before you book.</p>
+    <div class="ws-stay-grid">
+      {% for hotel in stays %}
+      <article class="ws-stay">
+        <img src="{{ hotel.image or url_for('static', filename='images/waadi-kashmir-travels-logo-enhanced.webp') }}" alt="{{ hotel.name }}" loading="lazy" decoding="async">
+        <div>
+          <small>{{ hotel.location_short }}</small>
+          <h3>{{ hotel.name }}</h3>
+          <p>{{ hotel.intro_title }}</p>
+          <ul>{% for item in hotel.facility_list[:3] %}<li>{{ item }}</li>{% endfor %}</ul>
+          <a class="ws-btn-ghost" href="/hotel/{{ hotel.slug }}/">View <span aria-hidden="true">→</span></a>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    <div class="ws-center"><a class="ws-btn ws-btn-outline" href="/hotels">Explore all stays</a></div>
+  </div>
+</section>
+{% endif %}
+
+<section class="ws-dark ws-reviews" id="reviews">
+  <div class="ws-wrap">
+    {% if request.args.get('review_submitted') %}<p class="ws-notice" role="status">Thank you for sharing your experience. Our team will review it before publishing.</p>{% endif %}
+    {% if reviews %}
+    <div class="ws-quote-grid">{% for review in reviews %}<figure><span class="ws-quote-mark" aria-hidden="true">“</span><blockquote>{{ review.review_text|truncate(220) }}</blockquote><figcaption><span aria-label="{{ review.rating }} out of 5 stars">{{ '★' * review.rating }}</span>{{ review.guest_name }}{% if review.location %}, {{ review.location }}{% endif %}</figcaption></figure>{% endfor %}</div>
+    {% else %}
+    <div class="ws-quote-empty"><span class="ws-quote-mark" aria-hidden="true">“</span><p>Every journey we plan becomes a story. We are collecting reviews from our guests — travelled with us? Be the first to share yours.</p></div>
+    {% endif %}
+    <div class="ws-review-actions">
+      <a class="ws-google" href="{{ google_reviews_url or 'https://www.google.com/search?q=Waadi+Kashmir+Travels+reviews' }}" target="_blank" rel="noopener"><span aria-hidden="true">G</span>Read our Google reviews ↗</a>
+      <details class="ws-review-form">
+        <summary>Share your Kashmir story</summary>
+        <form action="/reviews" method="post" class="ws-form">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <label>Your name<input name="guest_name" autocomplete="name" maxlength="120" required></label>
+          <div class="ws-form-grid"><label>City or country <span>(optional)</span><input name="location" maxlength="120" placeholder="e.g. Delhi"></label><label>Trip type <span>(optional)</span><input name="trip_label" maxlength="120" placeholder="e.g. Family holiday"></label></div>
+          <label>Your rating<select name="rating" required><option value="5">★★★★★ — Loved it</option><option value="4">★★★★☆ — Great</option><option value="3">★★★☆☆ — Good</option><option value="2">★★☆☆☆ — Could be better</option><option value="1">★☆☆☆☆ — Poor</option></select></label>
+          <label>Your review<textarea name="review_text" rows="4" minlength="10" maxlength="2000" required placeholder="Tell us what you enjoyed about your Kashmir journey..."></textarea></label>
+          <div class="ws-honeypot" aria-hidden="true"><label>Leave this field empty<input name="website" tabindex="-1" autocomplete="off"></label></div>
+          <button class="ws-btn ws-btn-gold" type="submit">Submit my review</button>
+          <small>Reviews are checked by our team before they appear.</small>
+        </form>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="ws-section ws-ink ws-why">
+  <div class="ws-wrap ws-why-grid">
+    <figure><img src="{{ url_for('static', filename='uploads/kashmir-best-hero.webp') }}" alt="Snow-covered Kashmir valley" loading="lazy" decoding="async"></figure>
+    <div>
+      <h2 class="ws-display light">Why choose us?</h2>
+      {% set reasons = [
+        ('A team that lives here', 'We are based in Srinagar. Routes, seasons, road closures and local rules are our everyday knowledge, not research.'),
+        ('Handpicked stays', 'Heritage hotels, deluxe houseboats and mountain resorts we know personally — matched to your budget.'),
+        ('Your own private cab', 'A dedicated vehicle and driver for your trip, with airport pickup and point-to-point transfers.'),
+        ('Clear written quotations', 'Hotels, inclusions, exclusions, payment schedule and cancellation terms in writing before you pay.'),
+        ('Support during the trip', 'Reach us by phone or WhatsApp before and throughout your journey when plans change.')
+      ] %}
+      {% for title, text in reasons %}<details class="ws-why-item"{% if loop.first %} open{% endif %}><summary>{{ title }}</summary><p>{{ text }}</p></details>{% endfor %}
+    </div>
+  </div>
+</section>
+
+{% if blogs %}
+<section class="ws-section ws-journal">
+  <div class="ws-wrap">
+    <div class="ws-head-row"><div><p class="ws-eyebrow dark">From our travel journal</p><h2 class="ws-title">Know before you go</h2></div><a class="ws-link" href="/blogs">Read all guides →</a></div>
+    <div class="ws-card-grid">{% for blog in blogs %}<article class="ws-post"><a href="{{ url_for('blog_detail', slug=blog.slug) }}"><img src="{{ blog.image_url }}" alt="{{ blog.title }}" loading="lazy" decoding="async"></a><div><small>{{ blog.category }}</small><h3><a href="{{ url_for('blog_detail', slug=blog.slug) }}">{{ blog.title }}</a></h3><p>{{ blog.excerpt|truncate(130) }}</p></div></article>{% endfor %}</div>
+  </div>
+</section>
+{% endif %}
+
+{% include "_contact_block.html" %}
 {% endblock %}

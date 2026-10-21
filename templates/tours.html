@@ -1,68 +1,52 @@
-{% extends "layout.html" %}
+{% extends "site.html" %}
 {% block title %}Kashmir Tour Packages | Waadi Kashmir Travels{% endblock %}
 {% block meta_description %}Compare flexible Kashmir packages by duration and travel style, with private transport, stays and local planning support.{% endblock %}
 
 {% block content %}
-<section class="page-hero page-hero-tours">
-  <div class="container page-hero-inner">
-    <div class="page-hero-copy">
-      <span class="section-tag">Kashmir Packages</span>
-      <h1>Signature Kashmir Tours Designed Around Comfort</h1>
-      <p>From serene houseboats to snow-clad meadows, every itinerary is carefully curated with private transfers, luxury stays, and local guidance.</p>
-      <div class="page-hero-pills">
-        <span>Luxury Stays</span>
-        <span>Private Cabs</span>
-        <span>Tailor-Made Plans</span>
-      </div>
-    </div>
-    <div class="page-hero-card">
-      <h3>Why travelers choose us</h3>
-      <ul>
-        <li>Airport pickup and drop-off</li>
-        <li>Handpicked premium accommodations</li>
-        <li>Flexible departures and custom pacing</li>
-      </ul>
+<section class="ws-page-hero">
+  <img src="{{ url_for('static', filename='uploads/kashmir-delight_20260811075539.webp') }}" alt="" decoding="async">
+  <div class="ws-wrap">
+    <nav class="ws-crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>›</span><span>Packages</span></nav>
+    <p class="ws-kicker"><span></span>Curated journeys</p>
+    <h1>Kashmir tour packages</h1>
+    <p class="ws-hero-lead">Private itineraries with handpicked stays, your own cab and a Srinagar team on call — each one adjustable to your dates, pace and budget.</p>
+    <div class="ws-hero-pills"><span>Private cab</span><span>Houseboat stays</span><span>Tailor-made plans</span></div>
+  </div>
+</section>
+
+<section class="ws-section" style="padding-top:0">
+  <div class="ws-wrap">
+    <form class="ws-card ws-filter" method="get" action="/tours">
+      <label>Search packages<input type="search" name="q" value="{{ request.args.get('q','') }}" placeholder="Destination or package name"></label>
+      <label>Duration<select name="duration"><option value="">Any duration</option>{% for value in ['5 Days','6 Days','7 Days','8 Days','12 Days'] %}<option {% if request.args.get('duration') == value %}selected{% endif %}>{{ value }}</option>{% endfor %}</select></label>
+      <label>Best for<select name="traveler"><option value="">All travellers</option>{% for value in ['family','honeymoon','group','adventure','luxury'] %}<option value="{{ value }}" {% if request.args.get('traveler') == value %}selected{% endif %}>{{ value|title }}</option>{% endfor %}</select></label>
+      <button class="ws-btn ws-btn-dark" type="submit">Find a package</button>
+      <a href="/tours">Clear</a>
+    </form>
+
+    <div class="ws-tour-grid">
+      {% for tour in tours %}
+      <article class="ws-tour">
+        <a class="ws-tour-img{% if tour.id == 6 %} contain{% endif %}" href="/tour/{{ tour.id }}"><img src="{{ tour.image_url or url_for('static', filename='images/waadi-kashmir-travels-logo-enhanced.webp') }}" alt="{{ tour.title }}" loading="lazy" decoding="async"><span class="ws-badge">{{ tour.duration }}</span></a>
+        <div class="ws-tour-body">
+          {% if tour.id == 6 %}<small class="ws-poster-note">Promotional artwork. Final flights, meals, hotels and prices are confirmed in writing.</small>{% endif %}
+          <h3><a href="/tour/{{ tour.id }}">{{ tour.title }}</a></h3>
+          <div class="ws-tour-meta">
+            <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>{{ 'Kashmir & Ladakh' if 'ladakh' in tour.title|lower else 'Kashmir Valley' }}</span>
+            <span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>{{ tour.duration }}</span>
+          </div>
+          <p>{{ tour.description|truncate(130) }}</p>
+          <div class="ws-tour-foot"><div><small>Starting from</small><strong>{{ tour.price or 'On request' }}</strong></div><a class="ws-chip-btn" href="/tour/{{ tour.id }}">Details</a></div>
+        </div>
+      </article>
+      {% else %}
+      <div class="ws-empty"><h3>No matching packages</h3><p>Try fewer filters, or let us design a custom itinerary for you.</p><a class="ws-btn ws-btn-dark" href="/contact#quote">Request a custom plan</a></div>
+      {% endfor %}
     </div>
   </div>
 </section>
 
-<section class="page-section">
-  <div class="container">
-    <div class="section-intro center">
-      <span class="section-tag">Best-Selling Packages</span>
-      <h2>Explore Our Most Loved Kashmir Holidays</h2>
-      <p>Choose from our most popular Kashmir packages, each crafted to showcase the best of the valley with premium stays and seamless planning.</p>
-    </div>
-    <form class="tour-filters" method="get" action="/tours">
-      <label>Search packages<input type="search" name="q" value="{{ request.args.get('q','') }}" placeholder="Destination or package"></label>
-      <label>Duration<select name="duration"><option value="">Any duration</option>{% for value in ['5 Days','6 Days','7 Days','8 Days','12 Days'] %}<option {% if request.args.get('duration') == value %}selected{% endif %}>{{ value }}</option>{% endfor %}</select></label>
-      <label>Best for<select name="traveler"><option value="">All travellers</option>{% for value in ['family','honeymoon','group','adventure','luxury'] %}<option value="{{ value }}" {% if request.args.get('traveler') == value %}selected{% endif %}>{{ value|title }}</option>{% endfor %}</select></label>
-      <button class="btn" type="submit">Find a package</button><a href="/tours">Clear</a>
-    </form>
-    <div class="tour-grid">
-      {% for tour in tours %}
-      <article class="tour-card">
-        {% if tour.image_url %}
-        <div class="tour-image{% if tour.id == 6 %} poster-fit{% endif %}">
-          <img src="{{ tour.image_url }}" alt="{{ tour.title }}" loading="lazy" decoding="async" />
-        </div>
-        {% endif %}
-        <div class="tour-card-content">
-          {% if tour.id == 6 %}<small class="poster-disclaimer">Promotional artwork. Final flights, meals, hotels and prices are confirmed in writing.</small>{% endif %}
-          <span class="tour-category">Tailor-Made Tour</span>
-          <h3>{{ tour.title }}</h3>
-          <p>{{ tour.description }}</p>
-          <div class="tour-bottom">
-            <span class="tour-meta">{{ tour.duration }}</span>
-            <strong class="tour-price">{{ tour.price }}</strong>
-          </div>
-          <span class="tour-season">Season-aware itinerary planning</span>
-          <a class="btn btn-card" href="/tour/{{ tour.id }}">View Details</a>
-        </div>
-      </article>
-      {% endfor %}
-      {% if not tours %}<div class="empty-state"><h3>No matching packages</h3><p>Try fewer filters or ask us to create a custom itinerary.</p><a class="btn" href="/contact">Request a custom plan</a></div>{% endif %}
-    </div>
-  </div>
+<section class="ws-cta-band">
+  <div class="ws-wrap"><h2>Don’t see your perfect trip? We’ll build it.</h2><a class="ws-btn ws-btn-gold" href="/contact#quote">Plan a custom journey</a></div>
 </section>
 {% endblock %}

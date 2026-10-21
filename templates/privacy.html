@@ -1,4 +1,22 @@
-{% extends "layout.html" %}
+{% extends "site.html" %}
 {% block title %}Privacy Policy | Waadi Kashmir Travels{% endblock %}
 {% block meta_description %}Learn how Waadi Kashmir Travels collects, uses and protects enquiry and booking information.{% endblock %}
-{% block content %}<section class="policy-page"><div class="container"><p class="reference-eyebrow">LEGAL</p><h1>Privacy policy</h1><p class="policy-updated">Last updated: 11 August 2026</p><h2>Information we collect</h2><p>We collect the details you submit through enquiry and booking forms, such as your name, email, phone number, travel dates, group size and trip preferences. Basic technical information may be collected by configured analytics services.</p><h2>How we use it</h2><p>We use your information to prepare quotations, arrange travel services, respond to requests, maintain booking records and improve our website. We do not sell personal information.</p><h2>Sharing and retention</h2><p>When necessary to fulfil a booking, relevant details may be shared with selected hotels, transport providers, guides or other travel suppliers. Records are retained only as long as reasonably required for service, legal and accounting purposes.</p><h2>Your choices</h2><p>You may request access, correction or deletion of your information, subject to applicable record-keeping obligations. Contact us at <a href="mailto:{{ contact.email }}">{{ contact.email }}</a>.</p><h2>Security and updates</h2><p>We use reasonable safeguards, but no internet service can guarantee absolute security. This policy may be updated as our services or legal obligations change.</p></div></section>{% endblock %}
+{% block content %}
+<section class="ws-page-hero compact">
+  <div class="ws-wrap">
+    <nav class="ws-crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>›</span><span>Privacy</span></nav>
+    <p class="ws-kicker"><span></span>Legal</p>
+    <h1>Privacy policy</h1>
+  </div>
+</section>
+<article class="ws-article" style="padding-top:3rem">
+  <p class="ws-article-meta">Last updated: 11 August 2026</p>
+  <div class="ws-prose">
+    <h2>Information we collect</h2><p>We collect the details you submit through enquiry and booking forms, such as your name, email, phone number, travel dates, group size and trip preferences. Basic technical information may be collected by configured analytics services.</p>
+    <h2>How we use it</h2><p>We use your information to prepare quotations, arrange travel services, respond to requests, maintain booking records and improve our website. We do not sell personal information.</p>
+    <h2>Sharing and retention</h2><p>When necessary to fulfil a booking, relevant details may be shared with selected hotels, transport providers, guides or other travel suppliers. Records are retained only as long as reasonably required for service, legal and accounting purposes.</p>
+    <h2>Your choices</h2><p>You may request access, correction or deletion of your information, subject to applicable record-keeping obligations. Contact us at <a href="mailto:{{ contact.email }}">{{ contact.email }}</a>.</p>
+    <h2>Security and updates</h2><p>We use reasonable safeguards, but no internet service can guarantee absolute security. This policy may be updated as our services or legal obligations change.</p>
+  </div>
+</article>
+{% endblock %}

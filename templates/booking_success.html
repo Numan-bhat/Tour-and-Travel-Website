@@ -1,15 +1,16 @@
-{% extends "layout.html" %}
+{% extends "site.html" %}
 {% block title %}Booking Request Received | Waadi Kashmir Travels{% endblock %}
 {% block meta_description %}Your Kashmir tour request has been received by Waadi Kashmir Travels.{% endblock %}
 {% block robots %}noindex,nofollow{% endblock %}
 
 {% block content %}
-<section class="page-section">
-  <div class="container thank-you">
+<section class="ws-status">
+  <div class="ws-card ws-status-card">
+    <div class="ws-status-icon" aria-hidden="true">✓</div>
     <h1>Booking request received</h1>
-    <p>Thanks {{ name }}. We received your request for <strong>{{ tour.title }}</strong>.</p>
-    <p>Travellers: {{ travelers }}. Our team will confirm availability, pricing and payment terms before the booking is final.</p>
-    <a class="btn btn-primary" href="/tours">Browse more tours</a>
+    <p>Thanks {{ name }}. We received your request for <strong>{{ tour.title }}</strong> for {{ travelers }} traveller{{ 's' if travelers != 1 }}.</p>
+    <p>Our team will confirm availability, pricing and payment terms in writing before the booking is final.</p>
+    <div class="ws-actions"><a class="ws-btn ws-btn-dark" href="/tours">Browse more packages</a><a class="ws-btn ws-btn-white" href="/">Back to home</a></div>
   </div>
 </section>
 {% endblock %}

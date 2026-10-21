@@ -1,3 +1,13 @@
-{% extends "layout.html" %}
+{% extends "site.html" %}
 {% block title %}{{ code }} — {{ title }} | Waadi Kashmir Travels{% endblock %}
-{% block content %}<section class="status-page"><div class="container"><span>{{ code }}</span><h1>{{ title }}</h1><p>{{ message }}</p><div><a class="reference-btn" href="/">Return home</a><a class="reference-text-link" href="/contact">Contact our team →</a></div></div></section>{% endblock %}
+{% block robots %}noindex,nofollow{% endblock %}
+{% block content %}
+<section class="ws-status">
+  <div class="ws-card ws-status-card">
+    <p class="ws-status-code">{{ code }}</p>
+    <h1>{{ title }}</h1>
+    <p>{{ message }}</p>
+    <div class="ws-actions"><a class="ws-btn ws-btn-dark" href="/">Return home</a><a class="ws-btn ws-btn-white" href="/contact">Contact our team →</a></div>
+  </div>
+</section>
+{% endblock %}
