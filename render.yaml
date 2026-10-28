@@ -1,0 +1,36 @@
+# Render Blueprint: website (Docker) + PostgreSQL database + disk for admin photo uploads.
+# Render → New → Blueprint → pick this repository. It asks for the two admin values marked sync: false.
+services:
+  - type: web
+    name: waadi-kashmir-travels
+    runtime: docker
+    plan: 0.5c-512mb
+    region: singapore
+    healthCheckPath: /health
+    autoDeploy: true
+    disk:
+      name: uploads
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: waadi-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: UPLOAD_DIR
+        value: /data/uploads
+      - key: APP_ENV
+        value: production
+      - key: ADMIN_USERNAME
+        sync: false
+      - key: ADMIN_PASSWORD_HASH
+        sync: false
+
+databases:
+  - name: waadi-db
+    plan: 0.1c-256mb
+    region: singapore
+    databaseName: waadi
+    user: waadi
