@@ -10,7 +10,7 @@ https://api.whatsapp.com/send/?phone={{ contact.whatsapp }}&amp;text={{ text|url
 {% set highlights = trek.highlights|from_json %}
 <article class="ws-trek{% if large %} is-large{% endif %}" data-kind="{{ trek.kind }}" data-difficulty="{{ trek.difficulty }}">
   <a class="ws-trek-img" href="{{ url_for('trek_detail', slug=trek.slug) }}" tabindex="-1" aria-hidden="true">
-    <img src="{{ trek.image_url or url_for('static', filename='images/waadi-kashmir-travels-logo-enhanced.webp') }}" alt="" loading="lazy" decoding="async">
+    <img src="{{ (trek.image_url or url_for('static', filename='images/waadi-kashmir-travels-logo-enhanced.webp'))|img(800) }}" srcset="{{ (trek.image_url or url_for('static', filename='images/waadi-kashmir-travels-logo-enhanced.webp'))|srcset('400,800,1200') }}" sizes="(max-width: 760px) 100vw, 460px" alt="" loading="lazy" decoding="async">
     {% if trek.tag %}<span class="ws-trek-tag">{{ trek.tag }}</span>{% endif %}
     <span class="ws-trek-kind">{{ kinds.get(trek.kind, 'Trek') }}</span>
   </a>
@@ -44,7 +44,7 @@ https://api.whatsapp.com/send/?phone={{ contact.whatsapp }}&amp;text={{ text|url
 {% set wildlife_count = treks|selectattr('kind', 'equalto', 'wildlife')|list|length %}
 
 <section class="ws-page-hero ws-trek-hero">
-  <img src="{{ url_for('static', filename='uploads/sonmarg_20260811073028.jpg') }}" alt="" decoding="async" fetchpriority="high">
+  <img src="{{ (url_for('static', filename='uploads/sonmarg_20260811073028.jpg'))|img(1600) }}" srcset="{{ (url_for('static', filename='uploads/sonmarg_20260811073028.jpg'))|srcset('800,1200,1600,2000') }}" sizes="100vw" alt="" decoding="async" fetchpriority="high">
   <div class="ws-wrap">
     <nav class="ws-crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>›</span><span>Treks</span></nav>
     <p class="ws-kicker"><span></span>Treks &amp; wild places</p>

@@ -5,7 +5,7 @@
 
 {% block content %}
 <section class="ws-page-hero compact">
-  <img src="{{ hotel.images[0] }}" alt="" decoding="async">
+  <img src="{{ (hotel.images[0])|img(1600) }}" srcset="{{ (hotel.images[0])|srcset('800,1200,1600,2000') }}" sizes="100vw" alt="" decoding="async">
   <div class="ws-wrap">
     <nav class="ws-crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>›</span><a href="/hotels">Stays</a><span>›</span><span>{{ hotel.location_short }}</span></nav>
     <p class="ws-kicker"><span></span>{{ hotel.location_short }} · {{ '★' * hotel.stars }}</p>
@@ -16,7 +16,7 @@
 
 <div class="ws-wrap">
   <section class="ws-gallery-grid" aria-label="Hotel gallery">
-    {% for image in hotel.images[:5] %}<button type="button" data-gallery-image="{{ image }}" aria-label="Enlarge photo {{ loop.index }}"><img src="{{ image }}" alt="{{ hotel.name }} photo {{ loop.index }}" {% if not loop.first %}loading="lazy"{% endif %} onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/waadi-kashmir-travels-logo-enhanced.webp') }}'"></button>{% endfor %}
+    {% for image in hotel.images[:5] %}<button type="button" data-gallery-image="{{ image }}" aria-label="Enlarge photo {{ loop.index }}"><img src="{{ (image)|img(1200) }}" srcset="{{ (image)|srcset('800,1200,1600') }}" sizes="(max-width: 1024px) 100vw, 50vw" alt="{{ hotel.name }} photo {{ loop.index }}" {% if not loop.first %}loading="lazy"{% endif %} onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/waadi-kashmir-travels-logo-enhanced.webp') }}'"></button>{% endfor %}
   </section>
 </div>
 

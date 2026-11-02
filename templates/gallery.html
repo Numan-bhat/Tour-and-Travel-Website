@@ -3,7 +3,7 @@
 {% block meta_description %}Browse Kashmir travel, hotel, cab and destination photos from Waadi Kashmir Travels.{% endblock %}
 {% block content %}
 <section class="ws-page-hero compact">
-  <img src="{{ url_for('static', filename='uploads/kashmir-3._20260811072903.jpg') }}" alt="" decoding="async">
+  <img src="{{ (url_for('static', filename='uploads/kashmir-3._20260811072903.jpg'))|img(1600) }}" srcset="{{ (url_for('static', filename='uploads/kashmir-3._20260811072903.jpg'))|srcset('800,1200,1600,2000') }}" sizes="100vw" alt="" decoding="async">
   <div class="ws-wrap">
     <nav class="ws-crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>›</span><span>Gallery</span></nav>
     <p class="ws-kicker"><span></span>Travel gallery</p>
@@ -13,7 +13,7 @@
 <section class="ws-section">
   <div class="ws-wrap">
     {% if assets %}
-    <div class="ws-masonry">{% for asset in assets %}<figure><img src="{{ url_for('static', filename='uploads/' ~ asset.filename) }}" alt="{{ asset.title }}" loading="lazy" decoding="async"><figcaption>{{ asset.title }}</figcaption></figure>{% endfor %}</div>
+    <div class="ws-masonry">{% for asset in assets %}<figure><img src="{{ (url_for('static', filename='uploads/' ~ asset.filename))|img(800) }}" srcset="{{ (url_for('static', filename='uploads/' ~ asset.filename))|srcset('400,800,1200') }}" sizes="(max-width: 760px) 100vw, 460px" alt="{{ asset.title }}" loading="lazy" decoding="async"><figcaption>{{ asset.title }}</figcaption></figure>{% endfor %}</div>
     {% else %}
     <div class="ws-empty"><h2>Gallery coming soon</h2><p>Our team is selecting genuine trip photographs for this page.</p></div>
     {% endif %}

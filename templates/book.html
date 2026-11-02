@@ -5,7 +5,7 @@
 
 {% block content %}
 <section class="ws-page-hero compact">
-  {% if tour.image_url %}<img src="{{ tour.image_url }}" alt="" decoding="async">{% endif %}
+  {% if tour.image_url %}<img src="{{ (tour.image_url)|img(1200) }}" srcset="{{ (tour.image_url)|srcset('800,1200,1600') }}" sizes="(max-width: 1024px) 100vw, 50vw" alt="" decoding="async">{% endif %}
   <div class="ws-wrap">
     <nav class="ws-crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>›</span><a href="/tours">Packages</a><span>›</span><a href="/tour/{{ tour.id }}">{{ tour.duration }}</a><span>›</span><span>Request</span></nav>
     <p class="ws-kicker"><span></span>Request this package</p>
@@ -28,7 +28,7 @@
       <small>Submitting this form does not confirm a booking or take payment. We first send availability, inclusions, exclusions, price, payment schedule and cancellation terms in writing.</small>
     </form>
     <aside class="ws-card ws-book-summary">
-      {% if tour.image_url %}<img src="{{ tour.image_url }}" alt="{{ tour.title }}" loading="lazy">{% endif %}
+      {% if tour.image_url %}<img src="{{ (tour.image_url)|img(400) }}" alt="{{ tour.title }}" loading="lazy">{% endif %}
       <div>
         <p class="ws-eyebrow dark">{{ tour.duration }}</p>
         <h2>{{ tour.title }}</h2>

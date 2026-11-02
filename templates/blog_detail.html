@@ -12,7 +12,7 @@
   </div>
 </section>
 <article class="ws-article">
-  <figure><img src="{{ blog.image_url }}" alt="{{ blog.title }}" decoding="async"></figure>
+  <figure><img src="{{ (blog.image_url)|img(1200) }}" srcset="{{ (blog.image_url)|srcset('800,1200,1600') }}" sizes="(max-width: 1024px) 100vw, 50vw" alt="{{ blog.title }}" decoding="async"></figure>
   <p class="ws-article-meta"><span>By <b>{{ blog.author or 'Waadi Kashmir Travels' }}</b></span><span>{{ blog.date }}</span></p>
   <div class="ws-prose">
     <p>{{ blog.content }}</p>

@@ -3,7 +3,7 @@
 {% block meta_description %}Request a clear Kashmir cab or custom tour quotation from our local Srinagar travel team by form, telephone, WhatsApp or email.{% endblock %}
 {% block content %}
 <section class="ws-page-hero">
-  <img src="{{ url_for('static', filename='images/force-urbania-booking-srinagar-2026.webp') }}" alt="" decoding="async">
+  <img src="{{ (url_for('static', filename='images/force-urbania-booking-srinagar-2026.webp'))|img(1600) }}" srcset="{{ (url_for('static', filename='images/force-urbania-booking-srinagar-2026.webp'))|srcset('800,1200,1600,2000') }}" sizes="100vw" alt="" decoding="async">
   <div class="ws-wrap">
     <nav class="ws-crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>›</span><span>Contact</span></nav>
     <p class="ws-kicker"><span></span>Tours · Stays · Kashmir cab booking</p>

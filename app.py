@@ -2459,6 +2459,90 @@ def quote_pdf_image(filename):
     return send_file(cached, mimetype="image/jpeg", max_age=86400)
 
 
+WEB_IMAGE_WIDTHS = (400, 800, 1200, 1600, 2000)
+WEB_IMAGE_EXTENSIONS = (".jpg", ".jpeg", ".jfif", ".png", ".webp", ".avif")
+_image_widths = {}
+
+
+def local_image_path(src):
+    """Return (static-relative filename, absolute path) for a resizable local photo, else (None, None)."""
+    if not src or not isinstance(src, str) or not src.startswith("/static/"):
+        return None, None
+    filename = src.split("?", 1)[0][len("/static/"):]
+    if not filename.lower().endswith(WEB_IMAGE_EXTENSIONS):
+        return None, None
+    path = safe_join(app.static_folder, filename)
+    return (filename, path) if path and os.path.isfile(path) else (None, None)
+
+
+def source_image_width(path):
+    try:
+        key = (path, os.path.getmtime(path))
+    except OSError:
+        return None
+    if key not in _image_widths:
+        try:
+            with Image.open(path) as image:
+                _image_widths[key] = image.width
+        except Exception:
+            _image_widths[key] = None
+    return _image_widths[key]
+
+
+@app.template_filter("img")
+def web_image_url(src, width=1200):
+    """Smaller WebP copy of a local photo for the public site; other URLs pass through unchanged."""
+    filename, path = local_image_path(src)
+    if not filename or Image is None:
+        return src
+    width = min((w for w in WEB_IMAGE_WIDTHS if w >= width), default=WEB_IMAGE_WIDTHS[-1])
+    return url_for("web_image", width=width, filename=filename)
+
+
+@app.template_filter("srcset")
+def web_image_srcset(src, widths="400,800,1200,1600"):
+    filename, path = local_image_path(src)
+    if not filename or Image is None:
+        return ""
+    original = source_image_width(path) or 0
+    chosen = [int(w) for w in str(widths).split(",") if int(w) in WEB_IMAGE_WIDTHS]
+    usable = [w for w in chosen if w <= original]
+    larger = [w for w in chosen if w > original]
+    if larger:
+        usable.append(larger[0])  # never upscaled, so this one serves the photo at its full original width
+    return ", ".join(f"{url_for('web_image', width=w, filename=filename)} {min(w, original) if original else w}w" for w in usable)
+
+
+@app.route("/img/<int:width>/<path:filename>")
+def web_image(width, filename):
+    if width not in WEB_IMAGE_WIDTHS:
+        abort(404)
+    source = safe_join(app.static_folder, filename)
+    if not source or not os.path.isfile(source) or not filename.lower().endswith(WEB_IMAGE_EXTENSIONS):
+        abort(404)
+    if Image is None:
+        return redirect(url_for("static", filename=filename))
+    cache_dir = os.path.join(app.instance_path, "web-image-cache")
+    stamp = f"{filename}|{width}|{os.path.getmtime(source)}|{os.path.getsize(source)}"
+    cached = os.path.join(cache_dir, hashlib.sha1(stamp.encode()).hexdigest() + ".webp")
+    if not os.path.isfile(cached):
+        try:
+            os.makedirs(cache_dir, exist_ok=True)
+            with Image.open(source) as image:
+                image = image.convert("RGBA" if image.mode in ("RGBA", "LA", "P") else "RGB")
+                if image.width > width:
+                    image = image.resize((width, round(image.height * width / image.width)), Image.LANCZOS)
+                temp = f"{cached}.{secrets.token_hex(4)}.tmp"
+                image.save(temp, "WEBP", quality=78, method=4)
+                os.replace(temp, cached)
+        except Exception:
+            app.logger.exception("Could not resize %s", filename)
+            return redirect(url_for("static", filename=filename))
+    response = send_file(cached, mimetype="image/webp", max_age=31536000)
+    response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+    return response
+
+
 def quote_document_context(quote, for_pdf=False):
     itinerary = load_json_list(quote.itinerary)
     hotels = load_json_list(quote.hotel_details)

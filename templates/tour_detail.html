@@ -4,7 +4,7 @@
 
 {% block content %}
 <section class="ws-tour-hero">
-  {% if tour.image_url %}<img src="{{ tour.image_url }}" alt="{{ tour.title }}" fetchpriority="high">{% endif %}
+  {% if tour.image_url %}<img src="{{ (tour.image_url)|img(1600) }}" srcset="{{ (tour.image_url)|srcset('800,1200,1600,2000') }}" sizes="100vw" alt="{{ tour.title }}" fetchpriority="high">{% endif %}
   <div class="ws-wrap">
     <nav class="ws-crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>›</span><a href="/tours">Packages</a><span>›</span><span>{{ tour.duration }}</span></nav>
     <p class="ws-kicker"><span></span>Private Kashmir journey</p>

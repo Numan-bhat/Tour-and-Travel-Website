@@ -4,7 +4,7 @@
 
 {% block content %}
 <section class="ws-page-hero">
-  <img src="{{ url_for('static', filename='uploads/kashmir-2._20260811072824.jpg') }}" alt="" decoding="async">
+  <img src="{{ (url_for('static', filename='uploads/kashmir-2._20260811072824.jpg'))|img(1600) }}" srcset="{{ (url_for('static', filename='uploads/kashmir-2._20260811072824.jpg'))|srcset('800,1200,1600,2000') }}" sizes="100vw" alt="" decoding="async">
   <div class="ws-wrap">
     <nav class="ws-crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>›</span><span>Destinations</span></nav>
     <p class="ws-kicker"><span></span>Places to visit</p>
@@ -19,7 +19,7 @@
   <div class="ws-wrap">
     {% for dest in destinations %}
     <article class="ws-dest-row" id="{{ dest.name|slugify }}">
-      <div class="ws-dest-img">{% if dest.image_url %}<img src="{{ dest.image_url }}" alt="{{ dest.name }}" loading="lazy" decoding="async">{% endif %}<span>{{ dest.region }}</span></div>
+      <div class="ws-dest-img">{% if dest.image_url %}<img src="{{ (dest.image_url)|img(1200) }}" srcset="{{ (dest.image_url)|srcset('800,1200,1600') }}" sizes="(max-width: 1024px) 100vw, 50vw" alt="{{ dest.name }}" loading="lazy" decoding="async">{% endif %}<span>{{ dest.region }}</span></div>
       <div class="ws-dest-copy">
         <span class="ws-place-bar"></span>
         <h2>{{ dest.name }}</h2>

@@ -3,7 +3,7 @@
 {% block meta_description %}Meet the local team planning comfortable, flexible Kashmir holidays, private cabs and tailored itineraries.{% endblock %}
 {% block content %}
 <section class="ws-page-hero">
-  <img src="{{ url_for('static', filename='uploads/pahalgam_20260811081532.jpg') }}" alt="" decoding="async">
+  <img src="{{ (url_for('static', filename='uploads/pahalgam_20260811081532.jpg'))|img(1600) }}" srcset="{{ (url_for('static', filename='uploads/pahalgam_20260811081532.jpg'))|srcset('800,1200,1600,2000') }}" sizes="100vw" alt="" decoding="async">
   <div class="ws-wrap">
     <nav class="ws-crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>›</span><span>About</span></nav>
     <p class="ws-kicker"><span></span>About Waadi Kashmir Travels</p>
@@ -22,7 +22,7 @@
       <p class="ws-lead" style="max-width:none;margin-top:1rem">From your first message to your final airport drop, we focus on clear communication, reliable arrangements and local guidance that helps you make the most of every day in Kashmir.</p>
       <div class="ws-stats"><div><strong>Local</strong><span>Srinagar-based team</span></div><div><strong>Private</strong><span>Cabs &amp; itineraries</span></div><div><strong>100%</strong><span>Tailored journeys</span></div></div>
     </div>
-    <figure><img src="{{ url_for('static', filename='uploads/kashmir-2._20260811072824.jpg') }}" alt="Shikaras on Dal Lake beneath snow-capped mountains" loading="lazy" decoding="async"></figure>
+    <figure><img src="{{ (url_for('static', filename='uploads/kashmir-2._20260811072824.jpg'))|img(1200) }}" srcset="{{ (url_for('static', filename='uploads/kashmir-2._20260811072824.jpg'))|srcset('800,1200,1600') }}" sizes="(max-width: 1024px) 100vw, 50vw" alt="Shikaras on Dal Lake beneath snow-capped mountains" loading="lazy" decoding="async"></figure>
   </div>
 </section>
 
