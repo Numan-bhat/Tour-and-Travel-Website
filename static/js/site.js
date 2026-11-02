@@ -23,7 +23,21 @@
     welcome.querySelector("[data-welcome-close]")?.focus({ preventScroll: true });
     welcome.addEventListener("click", close);
     ["wheel", "touchmove", "keydown"].forEach((type) => window.addEventListener(type, close, { passive: true }));
-    setTimeout(close, 4500);
+    // Count down only once the photo is on screen, so slow mobile connections still see it.
+    const photo = welcome.querySelector(".ws-welcome-photo");
+    let started = false;
+    const start = () => {
+      if (started) return;
+      started = true;
+      welcome.classList.add("is-ready");
+      setTimeout(close, 4500);
+    };
+    if (!photo || photo.complete) start();
+    else {
+      photo.addEventListener("load", start, { once: true });
+      photo.addEventListener("error", start, { once: true });
+      setTimeout(start, 6000);
+    }
   }
 
   // Hero slider
