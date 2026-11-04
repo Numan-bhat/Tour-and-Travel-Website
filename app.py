@@ -1,4 +1,5 @@
 import json
+import mimetypes
 import os
 import csv
 import hashlib
@@ -37,6 +38,10 @@ except ImportError:
     Image = None
 
 load_dotenv()
+
+# Some server images lack these, and fonts would otherwise be sent as application/octet-stream.
+mimetypes.add_type("font/woff2", ".woff2")
+mimetypes.add_type("image/webp", ".webp")
 
 app = Flask(__name__)
 # Secure by default: only an explicit APP_ENV=development disables the production
