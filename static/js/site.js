@@ -16,6 +16,7 @@
       if (closed) return;
       closed = true;
       welcome.classList.add("is-leaving");
+      document.dispatchEvent(new Event("welcome:closed"));
       document.documentElement.classList.remove("ws-welcome-open");
       setTimeout(() => welcome.remove(), reduceMotion ? 0 : 900);
       ["wheel", "touchmove", "keydown"].forEach((type) => window.removeEventListener(type, close));
@@ -48,26 +49,59 @@
     const cards = [...hero.querySelectorAll(".ws-hero-card")];
     const dots = [...hero.querySelectorAll(".ws-hero-dots button")];
     const counter = hero.querySelector("[data-current]");
+    const n = slides.length;
+    const deck = 3; // cards shown: the current place and the next two
     let index = 0;
     let timer = null;
-    const show = (next) => {
-      index = (next + slides.length) % slides.length;
-      slides.forEach((slide, i) => { slide.classList.toggle("is-active", i === index); slide.setAttribute("aria-hidden", String(i !== index)); });
+    let swapTimer = null;
+    // Cards run as a queue starting at the current slide; each change re-deals them with a staggered slide-in.
+    const dealCards = (animate) => {
+      cards.forEach((card, i) => {
+        const pos = (i - index + n) % n;
+        card.style.order = pos;
+        card.style.setProperty("--pos", pos);
+        card.hidden = pos >= deck;
+        card.classList.toggle("is-active", pos === 0);
+        card.setAttribute("aria-selected", String(pos === 0));
+        card.classList.remove("is-in");
+        if (animate && pos < deck) { void card.offsetWidth; card.classList.add("is-in"); }
+      });
+    };
+    const swap = (animate) => {
       texts.forEach((text, i) => { text.hidden = i !== index; text.classList.toggle("is-active", i === index); });
-      cards.forEach((card, i) => { card.classList.toggle("is-active", i === index); card.setAttribute("aria-selected", String(i === index)); });
+      dealCards(animate);
+    };
+    const show = (next) => {
+      next = (next + n) % n;
+      if (next === index) return;
+      index = next;
+      // Background and indicators change at once; text and cards leave first, then the new ones come in.
+      slides.forEach((slide, i) => { slide.classList.toggle("is-active", i === index); slide.setAttribute("aria-hidden", String(i !== index)); });
       dots.forEach((dot, i) => dot.classList.toggle("is-active", i === index));
       if (counter) counter.textContent = String(index + 1).padStart(2, "0");
-      const active = cards[index];
-      if (active && active.parentElement.scrollWidth > active.parentElement.clientWidth) {
-        active.parentElement.scrollTo({ left: active.offsetLeft - 8, behavior: reduceMotion ? "auto" : "smooth" });
-      }
+      clearTimeout(swapTimer);
+      if (reduceMotion) { swap(false); return; }
+      hero.classList.add("is-changing");
+      swapTimer = setTimeout(() => { hero.classList.remove("is-changing"); swap(true); }, 350);
     };
-    const start = () => { if (!reduceMotion) { stop(); timer = setInterval(() => show(index + 1), 6500); } };
+    // On a first visit the welcome screen covers the hero: deal the cards as it fades out, so the entrance is seen.
+    if (document.getElementById("welcome")) {
+      dealCards(false);
+      document.addEventListener("welcome:closed", () => {
+        const text = texts[index];
+        if (text) { text.hidden = true; void text.offsetWidth; text.hidden = false; } // replay the text entrance
+        dealCards(!reduceMotion);
+        start();
+      }, { once: true });
+    } else {
+      dealCards(!reduceMotion);
+    }
+    const start = () => { stop(); if (!reduceMotion) timer = setInterval(() => show(index + 1), 7000); };
     const stop = () => { if (timer) clearInterval(timer); timer = null; };
     hero.querySelectorAll("[data-goto]").forEach((button) => button.addEventListener("click", () => { show(Number(button.dataset.goto)); start(); }));
-    hero.addEventListener("mouseenter", stop);
-    hero.addEventListener("mouseleave", start);
-    hero.addEventListener("focusin", stop);
+    // Pause only while a keyboard user is inside the hero, so it can be read; the mouse no longer pauses it.
+    hero.addEventListener("focusin", (event) => { if (event.target.matches(":focus-visible")) stop(); });
+    hero.addEventListener("focusout", (event) => { if (!hero.contains(event.relatedTarget)) start(); });
     let touchX = null;
     hero.addEventListener("touchstart", (event) => { touchX = event.touches[0].clientX; }, { passive: true });
     hero.addEventListener("touchend", (event) => {
@@ -77,7 +111,7 @@
       touchX = null;
     });
     document.addEventListener("visibilitychange", () => (document.hidden ? stop() : start()));
-    start();
+    if (!document.getElementById("welcome")) start();
   }
 
   // Destination map

@@ -131,7 +131,14 @@ main:focus { outline: none; }
 .ws-hero-slide.is-active img { transform: scale(1); }
 .ws-hero-shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(10,6,20,.82) 0%, rgba(10,6,20,.5) 45%, rgba(10,6,20,.12) 75%), linear-gradient(0deg, rgba(10,6,20,.75), transparent 45%); }
 .ws-hero-inner { position: relative; z-index: 2; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 3rem; padding: 7rem 0 2.5rem; }
-.ws-hero-text { animation: wsRise .8s ease both; }
+/* Slide text: the outgoing slide lifts away, the incoming one rises in line by line. */
+.ws-hero-text > * { animation: wsRise .7s cubic-bezier(.16,1,.3,1) both; }
+.ws-hero-text > :nth-child(2) { animation-delay: .08s; }
+.ws-hero-text > :nth-child(3) { animation-delay: .16s; }
+.ws-hero-text > :nth-child(4) { animation-delay: .24s; }
+.ws-hero-text > :nth-child(5) { animation-delay: .32s; }
+.ws-hero.is-changing .ws-hero-text.is-active > * { animation: wsLiftOut .35s ease both; }
+@keyframes wsLiftOut { to { opacity: 0; transform: translateY(-22px); } }
 .ws-hero-title { margin: 1.1rem 0 .2rem; font: 900 clamp(3.4rem, 9vw, 7.4rem)/.9 var(--display); letter-spacing: -.035em; text-transform: uppercase; text-shadow: 0 8px 40px rgba(0,0,0,.35); }
 .ws-hero-script { color: #fff; font: italic 500 clamp(1.4rem, 3vw, 2.2rem)/1.2 var(--serif); }
 .ws-hero-lead { max-width: 480px; margin-top: 1.2rem; color: rgba(255,255,255,.82); }
@@ -147,6 +154,11 @@ main:focus { outline: none; }
 .ws-hero-card.is-active { width: 180px; height: 236px; border-color: rgba(255,255,255,.55); opacity: 1; }
 .ws-hero-card.is-active small, .ws-hero-card.is-active em { display: block; }
 .ws-hero-card.is-active b { font-size: 1.05rem; }
+/* Card queue (current place + the next two): cards slide in from the right one after another,
+   and slide out to the left when the slide changes, like a moving deck. */
+.ws-hero-card.is-in { animation: wsCardIn .65s cubic-bezier(.16,1,.3,1) both; animation-delay: calc(var(--pos, 0) * .1s); }
+@keyframes wsCardIn { from { opacity: 0; transform: translateX(110px) scale(.82); } }
+.ws-hero.is-changing .ws-hero-card { opacity: 0; transform: translateX(-70px) scale(.88); transition: opacity .35s ease, transform .35s ease; }
 .ws-hero-foot { position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: center; padding-bottom: 2rem; }
 .ws-hero-dots { display: flex; gap: .5rem; }
 .ws-hero-dots button { width: 16px; height: 4px; padding: 0; border: 0; border-radius: 4px; background: rgba(255,255,255,.35); cursor: pointer; transition: width .3s, background .3s; }
