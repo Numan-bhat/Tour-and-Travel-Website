@@ -1600,7 +1600,16 @@ def gallery():
     assets = MediaAsset.query.filter_by(category="Gallery").order_by(MediaAsset.created_at.desc()).all()
     if not assets:
         assets = MediaAsset.query.order_by(MediaAsset.created_at.desc()).limit(18).all()
-    return render_template("gallery.html", assets=assets, contact=get_contact_info())
+    # The same photo is often uploaded twice (re-uploads get a new timestamp; .png/.webp or _small copies):
+    # show each one once, keyed on the name it was uploaded with.
+    unique, seen = [], set()
+    for asset in assets:
+        key = re.sub(r"_\d{14}$", "", os.path.splitext(asset.filename)[0]).lower()
+        key = re.sub(r"_(small|medium|large|thumb)$", "", key)
+        if key not in seen:
+            seen.add(key)
+            unique.append(asset)
+    return render_template("gallery.html", assets=unique, contact=get_contact_info())
 
 
 @app.route("/privacy")
