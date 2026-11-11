@@ -110,35 +110,6 @@
   <div class="ws-center"><a class="ws-btn ws-btn-outline-light" href="/tours">View all packages</a></div>
 </section>
 
-<section class="ws-section ws-journey-tabs" data-tabs>
-  <div class="ws-wrap">
-    <h2 class="ws-display ws-center-text">Start your journey</h2>
-    <div class="ws-tabs" role="tablist">
-      <button type="button" role="tab" aria-selected="true" class="is-active" data-tab="0">By traveller</button>
-      <button type="button" role="tab" aria-selected="false" data-tab="1">By season</button>
-      <button type="button" role="tab" aria-selected="false" data-tab="2">By destination</button>
-    </div>
-    {% set traveller = [
-      ('Family', 'Easy pace, big memories', 'uploads/kashmir-delight_20260811075539.webp', '/tours?traveler=family'),
-      ('Honeymoon', 'Houseboats & quiet views', 'uploads/honeymoon_20260811075612.jpg', '/tours?traveler=honeymoon'),
-      ('Adventure', 'Treks, snow & high passes', 'images/amarnath-yatra-baltal-hero.webp', '/tours?traveler=adventure'),
-      ('Luxury', 'Palaces, spas & 5-star stays', 'images/lalit-grand-palace-gardens.jpg', '/tours?traveler=luxury'),
-      ('Ladakh', 'Monasteries & mountain lakes', 'uploads/GettyImages-469085179-5c6ce9b346e0fb0001e6e812_20260811073750.jpg', '/tours?q=ladakh')
-    ] %}
-    {% set seasons = [
-      ('Spring', 'Mar – May · tulips & blossom', 'uploads/kashmir-2._20260811072824.jpg'),
-      ('Summer', 'Jun – Aug · meadows & treks', 'uploads/pahalgam_20260811081532.jpg'),
-      ('Autumn', 'Sep – Nov · chinar gold', 'uploads/Doodhpathri_20260811073446.webp'),
-      ('Winter', 'Dec – Feb · snow season', 'uploads/kashmir-best-hero.webp'),
-      ('Ladakh season', 'May – Sep · roads open', 'uploads/2999_20190305160539_20260811073700.jpg')
-    ] %}
-    <div class="ws-tiles is-active" data-tab-panel="0">{% for name, note, img, link in traveller %}<a class="ws-tile" href="{{ link }}"><img src="{{ (url_for('static', filename=img))|img(800) }}" srcset="{{ (url_for('static', filename=img))|srcset('400,600,800,1200') }}" sizes="(max-width: 760px) 92vw, 260px" alt="" loading="lazy" decoding="async"><b>{{ name }}</b><small>{{ note }}</small></a>{% endfor %}</div>
-    <div class="ws-tiles" data-tab-panel="1" hidden>{% for name, note, img in seasons %}<a class="ws-tile" href="/contact?season={{ name|urlencode }}#quote"><img src="{{ (url_for('static', filename=img))|img(800) }}" srcset="{{ (url_for('static', filename=img))|srcset('400,600,800,1200') }}" sizes="(max-width: 760px) 92vw, 260px" alt="" loading="lazy" decoding="async"><b>{{ name }}</b><small>{{ note }}</small></a>{% endfor %}</div>
-    <div class="ws-tiles" data-tab-panel="2" hidden>{% for dest in destinations[:5] %}<a class="ws-tile" href="/destinations#{{ dest.name|slugify }}"><img src="{{ (dest.image_url)|img(800) }}" srcset="{{ (dest.image_url)|srcset('400,600,800,1200') }}" sizes="(max-width: 760px) 92vw, 260px" alt="" loading="lazy" decoding="async"><b>{{ dest.name }}</b><small>{{ dest.region }}</small></a>{% endfor %}</div>
-    <div class="ws-center"><a class="ws-btn ws-btn-dark" href="/tours">View more</a></div>
-  </div>
-</section>
-
 <section class="ws-section ws-mist ws-concierge">
   <div class="ws-wrap ws-concierge-grid">
     <div>
@@ -207,28 +178,6 @@
 </section>
 <script type="application/json" id="advisorTourData">{{ advisor_tours|tojson }}</script>
 
-<section class="ws-banner">
-  <img src="{{ (url_for('static', filename='uploads/kashmir-3._20260811072903.jpg'))|img(1200) }}" srcset="{{ (url_for('static', filename='uploads/kashmir-3._20260811072903.jpg'))|srcset('800,1200,1600,2000') }}" sizes="100vw" alt="" loading="lazy" decoding="async">
-  <div class="ws-banner-copy"><h2>Kashmir awaits</h2><p><b>01</b><a href="/tours">Tours</a><a href="/destinations">Explore</a><a href="/contact#quote">Plan</a></p></div>
-</section>
-
-<section class="ws-dark ws-experiences">
-  <div class="ws-wrap">
-    <h2 class="ws-title light ws-center-text">Experiences travellers love</h2>
-    <div class="ws-exp-grid">
-      {% set experiences = [
-        ('A Wazwan feast', 'The valley’s royal multi-course meal', 'images/kashmiri-cuisine-guide.webp', '/blog/traditional-kashmiri-cuisine-food-guide'),
-        ('Old-city craft bazaars', 'Pashmina, papier-mâché & saffron', 'images/things-to-buy-in-kashmir.webp', '/blog/things-to-buy-in-kashmir-shopping-guide'),
-        ('Doodhpathri meadows', 'Quiet pastures off the tourist trail', 'uploads/Doodhpathri_20260811073446.webp', '/destinations#doodhpathri'),
-        ('Camel trails of Nubra', 'Sand dunes beneath the Karakoram', 'uploads/GettyImages-469085179-5c6ce9b346e0fb0001e6e812_20260811073750.jpg', '/destinations#nubra-valley')
-      ] %}
-      {% for title, note, img, link in experiences %}
-      <a class="ws-exp" href="{{ link }}"><img src="{{ (url_for('static', filename=img))|img(800) }}" srcset="{{ (url_for('static', filename=img))|srcset('400,600,800,1200') }}" sizes="(max-width: 760px) 92vw, 380px" alt="" loading="lazy" decoding="async"><span><small>{{ note }}</small><b>{{ title }}</b></span></a>
-      {% endfor %}
-    </div>
-  </div>
-</section>
-
 {% if stays %}
 <section class="ws-section ws-stays">
   <div class="ws-wrap">
@@ -296,15 +245,6 @@
     </div>
   </div>
 </section>
-
-{% if blogs %}
-<section class="ws-section ws-journal">
-  <div class="ws-wrap">
-    <div class="ws-head-row"><div><p class="ws-eyebrow dark">From our travel journal</p><h2 class="ws-title">Know before you go</h2></div><a class="ws-link" href="/blogs">Read all guides →</a></div>
-    <div class="ws-card-grid">{% for blog in blogs %}<article class="ws-post"><a href="{{ url_for('blog_detail', slug=blog.slug) }}"><img src="{{ (blog.image_url)|img(800) }}" srcset="{{ (blog.image_url)|srcset('400,600,800,1200') }}" sizes="(max-width: 760px) 92vw, 390px" alt="{{ blog.title }}" loading="lazy" decoding="async"></a><div><small>{{ blog.category }}</small><h3><a href="{{ url_for('blog_detail', slug=blog.slug) }}">{{ blog.title }}</a></h3><p>{{ blog.excerpt|truncate(130) }}</p></div></article>{% endfor %}</div>
-  </div>
-</section>
-{% endif %}
 
 {% include "_contact_block.html" %}
 {% endblock %}

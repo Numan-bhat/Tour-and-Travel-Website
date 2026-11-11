@@ -1335,7 +1335,6 @@ def home():
         sample_tour=sample_tour,
         sample_itinerary=sample_itinerary,
         destinations=Destination.query.order_by(Destination.id).all(),
-        blogs=get_blog_posts()[:3],
         stays=Hotel.query.filter_by(active=True).order_by(Hotel.featured.desc(), Hotel.id).limit(6).all(),
         reviews=GuestReview.query.filter_by(published=True).order_by(GuestReview.created_at.desc()).limit(4).all(),
         settings=settings,
