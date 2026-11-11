@@ -953,8 +953,10 @@ a.ws-contact-row:hover { border-color: var(--violet); }
 
 /* ---------- Welcome screen (home page, first view per session) ---------- */
 .ws-welcome-open, .ws-welcome-open body { overflow: hidden; }
-.ws-welcome { position: fixed; inset: 0; z-index: 200; display: flex; flex-direction: column; align-items: center; overflow: hidden; background: #060409; color: #fff; text-align: center; cursor: pointer; transition: opacity .9s ease, visibility .9s; }
-.ws-welcome.is-leaving { opacity: 0; visibility: hidden; pointer-events: none; }
+.ws-welcome { position: fixed; inset: 0; z-index: 200; display: flex; flex-direction: column; align-items: center; overflow: hidden; background: #060409; color: #fff; text-align: center; cursor: pointer; transition: transform 1.05s cubic-bezier(.76,0,.24,1), visibility 1.05s; }
+/* Exit: the screen lifts away like a curtain, so its text never overlaps the hero text underneath. */
+.ws-welcome.is-leaving { transform: translateY(-100%); visibility: hidden; pointer-events: none; }
+.ws-welcome.is-leaving .ws-welcome-text, .ws-welcome.is-leaving .ws-welcome-foot, .ws-welcome.is-leaving .ws-welcome-enter { opacity: 0; transition: opacity .35s ease; }
 .ws-welcome-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 72% 38%; animation: wsWelcomeZoom 6s ease-out both; }
 .ws-welcome::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgba(6,4,9,.72) 0%, rgba(6,4,9,.35) 38%, transparent 60%, rgba(6,4,9,.55) 100%); }
 .ws-welcome > :not(img) { position: relative; z-index: 2; }
@@ -976,6 +978,10 @@ a.ws-contact-row:hover { border-color: var(--violet); }
 .ws-welcome-bar { position: absolute !important; left: 0; right: 0; bottom: 0; height: 3px; background: rgba(255,255,255,.08); }
 .ws-welcome-bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--gold-ink), var(--gold-2)); transform-origin: left; animation: wsWelcomeBar 4.5s linear both paused; }
 .ws-welcome.is-ready .ws-welcome-bar i { animation-play-state: running; }
+@media (min-width: 761px) and (orientation: portrait) {
+  .ws-welcome-text { margin-top: 20vh; }
+  .ws-welcome-photo { object-position: 72% 55%; }
+}
 @keyframes wsWelcomeZoom { from { transform: scale(1.08); } to { transform: scale(1); } }
 @keyframes wsWelcomeBar { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 @media (max-width: 760px) {

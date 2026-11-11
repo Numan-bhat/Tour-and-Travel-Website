@@ -13,7 +13,7 @@
 <section class="ws-section">
   <div class="ws-wrap">
     {% if assets %}
-    <div class="ws-masonry">{% for asset in assets %}<figure><img src="{{ (url_for('static', filename='uploads/' ~ asset.filename))|img(800) }}" srcset="{{ (url_for('static', filename='uploads/' ~ asset.filename))|srcset('400,800,1200') }}" sizes="(max-width: 760px) 100vw, 460px" alt="{{ asset.title }}" loading="lazy" decoding="async"><figcaption>{{ asset.title }}</figcaption></figure>{% endfor %}</div>
+    <div class="ws-masonry">{% for asset in assets %}<figure><img src="{{ (url_for('static', filename='uploads/' ~ asset.filename))|img(800) }}" srcset="{{ (url_for('static', filename='uploads/' ~ asset.filename))|srcset('400,600,800,1200') }}" sizes="(max-width: 760px) 100vw, 460px" alt="{{ asset.title }}" loading="lazy" decoding="async"><figcaption>{{ asset.title }}</figcaption></figure>{% endfor %}</div>
     {% else %}
     <div class="ws-empty"><h2>Gallery coming soon</h2><p>Our team is selecting genuine trip photographs for this page.</p></div>
     {% endif %}

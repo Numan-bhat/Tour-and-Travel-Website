@@ -21,7 +21,11 @@
     <meta name="twitter:description" content="{{ self.meta_description()|striptags|trim }}" />
     <meta name="twitter:image" content="{{ request.url_root.rstrip('/') }}{{ url_for('static', filename='uploads/kashmir-best-hero.webp') }}" />
     <link rel="canonical" href="{{ request.base_url }}" />
-    <link rel="icon" href="{{ url_for('static', filename='images/waadi-kashmir-travels-logo-enhanced.webp') }}" type="image/webp" />
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon-64.png') }}" type="image/png" sizes="64x64" />
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/apple-touch-icon.png') }}" />
+    {% if request.path == '/' %}{% set welcome_photo = url_for('static', filename='images/welcome-kashmir.webp') %}
+    <link rel="preload" as="image" href="{{ welcome_photo|img(1600) }}" imagesrcset="{{ welcome_photo|srcset('800,1200,1600,2000') }}" imagesizes="100vw" fetchpriority="high" />
+    <link rel="preload" as="font" type="font/woff2" href="{{ url_for('static', filename='fonts/playfair-display-normal-latin.woff2') }}" crossorigin />{% endif %}
     {% block preload %}{% endblock %}
     <title>{% block title %}Waadi Kashmir Travels | Kashmir Tour Packages{% endblock %}</title>
     <link rel="preload" as="font" type="font/woff2" href="{{ url_for('static', filename='fonts/manrope-normal-latin.woff2') }}" crossorigin />

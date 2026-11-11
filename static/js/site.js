@@ -18,10 +18,9 @@
       welcome.classList.add("is-leaving");
       document.dispatchEvent(new Event("welcome:closed"));
       document.documentElement.classList.remove("ws-welcome-open");
-      setTimeout(() => welcome.remove(), reduceMotion ? 0 : 900);
+      setTimeout(() => welcome.remove(), reduceMotion ? 0 : 1100);
       ["wheel", "touchmove", "keydown"].forEach((type) => window.removeEventListener(type, close));
     };
-    welcome.querySelector("[data-welcome-close]")?.focus({ preventScroll: true });
     welcome.addEventListener("click", close);
     ["wheel", "touchmove", "keydown"].forEach((type) => window.addEventListener(type, close, { passive: true }));
     // Count down only once the photo is on screen, so slow mobile connections still see it.

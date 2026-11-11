@@ -27,7 +27,7 @@
     <div class="ws-tour-grid">
       {% for tour in tours %}
       <article class="ws-tour">
-        <a class="ws-tour-img{% if tour.id == 6 %} contain{% endif %}" href="/tour/{{ tour.id }}"><img src="{{ (tour.image_url or url_for('static', filename='images/waadi-kashmir-travels-logo-enhanced.webp'))|img(800) }}" srcset="{{ (tour.image_url or url_for('static', filename='images/waadi-kashmir-travels-logo-enhanced.webp'))|srcset('400,800,1200') }}" sizes="(max-width: 760px) 100vw, 460px" alt="{{ tour.title }}" loading="lazy" decoding="async"><span class="ws-badge">{{ tour.duration }}</span></a>
+        <a class="ws-tour-img{% if tour.id == 6 %} contain{% endif %}" href="/tour/{{ tour.id }}"><img src="{{ (tour.image_url or url_for('static', filename='images/waadi-kashmir-travels-logo-enhanced.webp'))|img(800) }}" srcset="{{ (tour.image_url or url_for('static', filename='images/waadi-kashmir-travels-logo-enhanced.webp'))|srcset('400,600,800,1200') }}" sizes="(max-width: 760px) 100vw, 460px" alt="{{ tour.title }}" loading="lazy" decoding="async"><span class="ws-badge">{{ tour.duration }}</span></a>
         <div class="ws-tour-body">
           {% if tour.id == 6 %}<small class="ws-poster-note">Promotional artwork. Final flights, meals, hotels and prices are confirmed in writing.</small>{% endif %}
           <h3><a href="/tour/{{ tour.id }}">{{ tour.title }}</a></h3>

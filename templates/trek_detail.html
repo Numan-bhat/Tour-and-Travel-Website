@@ -121,7 +121,7 @@
     <div class="ws-trek-grid">
       {% for item in related %}
       <article class="ws-trek">
-        <a class="ws-trek-img" href="{{ url_for('trek_detail', slug=item.slug) }}" tabindex="-1" aria-hidden="true"><img src="{{ (item.image_url or url_for('static', filename='images/waadi-kashmir-travels-logo-enhanced.webp'))|img(800) }}" srcset="{{ (item.image_url or url_for('static', filename='images/waadi-kashmir-travels-logo-enhanced.webp'))|srcset('400,800,1200') }}" sizes="(max-width: 760px) 100vw, 460px" alt="" loading="lazy" decoding="async">{% if item.tag %}<span class="ws-trek-tag">{{ item.tag }}</span>{% endif %}</a>
+        <a class="ws-trek-img" href="{{ url_for('trek_detail', slug=item.slug) }}" tabindex="-1" aria-hidden="true"><img src="{{ (item.image_url or url_for('static', filename='images/waadi-kashmir-travels-logo-enhanced.webp'))|img(800) }}" srcset="{{ (item.image_url or url_for('static', filename='images/waadi-kashmir-travels-logo-enhanced.webp'))|srcset('400,600,800,1200') }}" sizes="(max-width: 760px) 100vw, 460px" alt="" loading="lazy" decoding="async">{% if item.tag %}<span class="ws-trek-tag">{{ item.tag }}</span>{% endif %}</a>
         <div class="ws-trek-body">
           <h3><a href="{{ url_for('trek_detail', slug=item.slug) }}">{{ item.name }}</a></h3>
           {% if item.subtitle %}<p class="ws-trek-sub">{{ item.subtitle }}</p>{% endif %}

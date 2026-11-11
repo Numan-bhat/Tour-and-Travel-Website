@@ -2529,7 +2529,7 @@ def quote_pdf_image(filename):
     return send_file(cached, mimetype="image/jpeg", max_age=86400)
 
 
-WEB_IMAGE_WIDTHS = (400, 800, 1200, 1600, 2000)
+WEB_IMAGE_WIDTHS = (400, 600, 800, 1200, 1600, 2000)
 WEB_IMAGE_EXTENSIONS = (".jpg", ".jpeg", ".jfif", ".png", ".webp", ".avif")
 _image_widths = {}
 

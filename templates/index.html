@@ -96,7 +96,7 @@
   <div class="ws-rail" data-rail>
     {% for tour in tours %}
     <article class="ws-trip">
-      <img src="{{ (tour.image_url)|img(800) }}" srcset="{{ (tour.image_url)|srcset('400,800,1200') }}" sizes="(max-width: 760px) 100vw, 460px" alt="{{ tour.title }}" loading="lazy" decoding="async">
+      <img src="{{ (tour.image_url)|img(800) }}" srcset="{{ (tour.image_url)|srcset('400,600,800,1200') }}" sizes="(max-width: 760px) 80vw, 300px" alt="{{ tour.title }}" loading="lazy" decoding="async">
       <span class="ws-badge">{{ tour.duration }}</span>
       <div>
         <small>{{ 'Ladakh' if 'ladakh' in tour.title|lower else 'Kashmir' }}</small>
@@ -132,9 +132,9 @@
       ('Winter', 'Dec – Feb · snow season', 'uploads/kashmir-best-hero.webp'),
       ('Ladakh season', 'May – Sep · roads open', 'uploads/2999_20190305160539_20260811073700.jpg')
     ] %}
-    <div class="ws-tiles is-active" data-tab-panel="0">{% for name, note, img, link in traveller %}<a class="ws-tile" href="{{ link }}"><img src="{{ (url_for('static', filename=img))|img(800) }}" srcset="{{ (url_for('static', filename=img))|srcset('400,800,1200') }}" sizes="(max-width: 760px) 100vw, 460px" alt="" loading="lazy" decoding="async"><b>{{ name }}</b><small>{{ note }}</small></a>{% endfor %}</div>
-    <div class="ws-tiles" data-tab-panel="1" hidden>{% for name, note, img in seasons %}<a class="ws-tile" href="/contact?season={{ name|urlencode }}#quote"><img src="{{ (url_for('static', filename=img))|img(800) }}" srcset="{{ (url_for('static', filename=img))|srcset('400,800,1200') }}" sizes="(max-width: 760px) 100vw, 460px" alt="" loading="lazy" decoding="async"><b>{{ name }}</b><small>{{ note }}</small></a>{% endfor %}</div>
-    <div class="ws-tiles" data-tab-panel="2" hidden>{% for dest in destinations[:5] %}<a class="ws-tile" href="/destinations#{{ dest.name|slugify }}"><img src="{{ (dest.image_url)|img(800) }}" srcset="{{ (dest.image_url)|srcset('400,800,1200') }}" sizes="(max-width: 760px) 100vw, 460px" alt="" loading="lazy" decoding="async"><b>{{ dest.name }}</b><small>{{ dest.region }}</small></a>{% endfor %}</div>
+    <div class="ws-tiles is-active" data-tab-panel="0">{% for name, note, img, link in traveller %}<a class="ws-tile" href="{{ link }}"><img src="{{ (url_for('static', filename=img))|img(800) }}" srcset="{{ (url_for('static', filename=img))|srcset('400,600,800,1200') }}" sizes="(max-width: 760px) 92vw, 260px" alt="" loading="lazy" decoding="async"><b>{{ name }}</b><small>{{ note }}</small></a>{% endfor %}</div>
+    <div class="ws-tiles" data-tab-panel="1" hidden>{% for name, note, img in seasons %}<a class="ws-tile" href="/contact?season={{ name|urlencode }}#quote"><img src="{{ (url_for('static', filename=img))|img(800) }}" srcset="{{ (url_for('static', filename=img))|srcset('400,600,800,1200') }}" sizes="(max-width: 760px) 92vw, 260px" alt="" loading="lazy" decoding="async"><b>{{ name }}</b><small>{{ note }}</small></a>{% endfor %}</div>
+    <div class="ws-tiles" data-tab-panel="2" hidden>{% for dest in destinations[:5] %}<a class="ws-tile" href="/destinations#{{ dest.name|slugify }}"><img src="{{ (dest.image_url)|img(800) }}" srcset="{{ (dest.image_url)|srcset('400,600,800,1200') }}" sizes="(max-width: 760px) 92vw, 260px" alt="" loading="lazy" decoding="async"><b>{{ dest.name }}</b><small>{{ dest.region }}</small></a>{% endfor %}</div>
     <div class="ws-center"><a class="ws-btn ws-btn-dark" href="/tours">View more</a></div>
   </div>
 </section>
@@ -208,7 +208,7 @@
 <script type="application/json" id="advisorTourData">{{ advisor_tours|tojson }}</script>
 
 <section class="ws-banner">
-  <img src="{{ (url_for('static', filename='uploads/kashmir-3._20260811072903.jpg'))|img(1200) }}" srcset="{{ (url_for('static', filename='uploads/kashmir-3._20260811072903.jpg'))|srcset('800,1200,1600') }}" sizes="(max-width: 1024px) 100vw, 50vw" alt="" loading="lazy" decoding="async">
+  <img src="{{ (url_for('static', filename='uploads/kashmir-3._20260811072903.jpg'))|img(1200) }}" srcset="{{ (url_for('static', filename='uploads/kashmir-3._20260811072903.jpg'))|srcset('800,1200,1600,2000') }}" sizes="100vw" alt="" loading="lazy" decoding="async">
   <div class="ws-banner-copy"><h2>Kashmir awaits</h2><p><b>01</b><a href="/tours">Tours</a><a href="/destinations">Explore</a><a href="/contact#quote">Plan</a></p></div>
 </section>
 
@@ -223,7 +223,7 @@
         ('Camel trails of Nubra', 'Sand dunes beneath the Karakoram', 'uploads/GettyImages-469085179-5c6ce9b346e0fb0001e6e812_20260811073750.jpg', '/destinations#nubra-valley')
       ] %}
       {% for title, note, img, link in experiences %}
-      <a class="ws-exp" href="{{ link }}"><img src="{{ (url_for('static', filename=img))|img(800) }}" srcset="{{ (url_for('static', filename=img))|srcset('400,800,1200') }}" sizes="(max-width: 760px) 100vw, 460px" alt="" loading="lazy" decoding="async"><span><small>{{ note }}</small><b>{{ title }}</b></span></a>
+      <a class="ws-exp" href="{{ link }}"><img src="{{ (url_for('static', filename=img))|img(800) }}" srcset="{{ (url_for('static', filename=img))|srcset('400,600,800,1200') }}" sizes="(max-width: 760px) 92vw, 380px" alt="" loading="lazy" decoding="async"><span><small>{{ note }}</small><b>{{ title }}</b></span></a>
       {% endfor %}
     </div>
   </div>
@@ -237,7 +237,7 @@
     <div class="ws-stay-grid">
       {% for hotel in stays %}
       <article class="ws-stay">
-        <img src="{{ (hotel.image or url_for('static', filename='images/waadi-kashmir-travels-logo-enhanced.webp'))|img(800) }}" srcset="{{ (hotel.image or url_for('static', filename='images/waadi-kashmir-travels-logo-enhanced.webp'))|srcset('400,800,1200') }}" sizes="(max-width: 760px) 100vw, 460px" alt="{{ hotel.name }}" loading="lazy" decoding="async">
+        <img src="{{ (hotel.image or url_for('static', filename='images/waadi-kashmir-travels-logo-enhanced.webp'))|img(800) }}" srcset="{{ (hotel.image or url_for('static', filename='images/waadi-kashmir-travels-logo-enhanced.webp'))|srcset('400,600,800,1200') }}" sizes="(max-width: 760px) 92vw, 390px" alt="{{ hotel.name }}" loading="lazy" decoding="async">
         <div>
           <small>{{ hotel.location_short }}</small>
           <h3>{{ hotel.name }}</h3>
@@ -282,7 +282,7 @@
 
 <section class="ws-section ws-ink ws-why">
   <div class="ws-wrap ws-why-grid">
-    <figure><img src="{{ (url_for('static', filename='uploads/kashmir-best-hero.webp'))|img(1600) }}" srcset="{{ (url_for('static', filename='uploads/kashmir-best-hero.webp'))|srcset('800,1200,1600,2000') }}" sizes="100vw" alt="Snow-covered Kashmir valley" loading="lazy" decoding="async"></figure>
+    <figure><img src="{{ (url_for('static', filename='uploads/kashmir-best-hero.webp'))|img(1600) }}" srcset="{{ (url_for('static', filename='uploads/kashmir-best-hero.webp'))|srcset('400,600,800,1200,1600') }}" sizes="(max-width: 1024px) 96vw, 570px" alt="Snow-covered Kashmir valley" loading="lazy" decoding="async"></figure>
     <div>
       <h2 class="ws-display light">Why choose us?</h2>
       {% set reasons = [
@@ -301,7 +301,7 @@
 <section class="ws-section ws-journal">
   <div class="ws-wrap">
     <div class="ws-head-row"><div><p class="ws-eyebrow dark">From our travel journal</p><h2 class="ws-title">Know before you go</h2></div><a class="ws-link" href="/blogs">Read all guides →</a></div>
-    <div class="ws-card-grid">{% for blog in blogs %}<article class="ws-post"><a href="{{ url_for('blog_detail', slug=blog.slug) }}"><img src="{{ (blog.image_url)|img(800) }}" srcset="{{ (blog.image_url)|srcset('400,800,1200') }}" sizes="(max-width: 760px) 100vw, 460px" alt="{{ blog.title }}" loading="lazy" decoding="async"></a><div><small>{{ blog.category }}</small><h3><a href="{{ url_for('blog_detail', slug=blog.slug) }}">{{ blog.title }}</a></h3><p>{{ blog.excerpt|truncate(130) }}</p></div></article>{% endfor %}</div>
+    <div class="ws-card-grid">{% for blog in blogs %}<article class="ws-post"><a href="{{ url_for('blog_detail', slug=blog.slug) }}"><img src="{{ (blog.image_url)|img(800) }}" srcset="{{ (blog.image_url)|srcset('400,600,800,1200') }}" sizes="(max-width: 760px) 92vw, 390px" alt="{{ blog.title }}" loading="lazy" decoding="async"></a><div><small>{{ blog.category }}</small><h3><a href="{{ url_for('blog_detail', slug=blog.slug) }}">{{ blog.title }}</a></h3><p>{{ blog.excerpt|truncate(130) }}</p></div></article>{% endfor %}</div>
   </div>
 </section>
 {% endif %}

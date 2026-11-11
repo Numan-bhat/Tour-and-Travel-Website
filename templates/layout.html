@@ -22,7 +22,8 @@
     <meta name="twitter:description" content="{{ self.meta_description()|striptags|trim }}" />
     <meta name="twitter:image" content="{{ request.url_root.rstrip('/') }}{{ url_for('static', filename='uploads/kashmir-best-hero.webp') }}" />
     <link rel="canonical" href="{{ request.base_url }}" />
-    <link rel="icon" href="{{ url_for('static', filename='images/waadi-kashmir-travels-logo-enhanced.webp') }}" type="image/webp" />
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon-64.png') }}" type="image/png" sizes="64x64" />
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/apple-touch-icon.png') }}" />
     {% if request.endpoint == 'home' %}<link rel="preload" as="image" href="{{ url_for('static', filename='uploads/kashmir-best-hero.webp') }}" type="image/webp" fetchpriority="high" />{% endif %}
     <title>{% block title %}Waadi Kashmir Travels | Kashmir Tour Packages{% endblock %}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />

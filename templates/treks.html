@@ -10,7 +10,7 @@ https://api.whatsapp.com/send/?phone={{ contact.whatsapp }}&amp;text={{ text|url
 {% set highlights = trek.highlights|from_json %}
 <article class="ws-trek{% if large %} is-large{% endif %}" data-kind="{{ trek.kind }}" data-difficulty="{{ trek.difficulty }}">
   <a class="ws-trek-img" href="{{ url_for('trek_detail', slug=trek.slug) }}" tabindex="-1" aria-hidden="true">
-    <img src="{{ (trek.image_url or url_for('static', filename='images/waadi-kashmir-travels-logo-enhanced.webp'))|img(800) }}" srcset="{{ (trek.image_url or url_for('static', filename='images/waadi-kashmir-travels-logo-enhanced.webp'))|srcset('400,800,1200') }}" sizes="(max-width: 760px) 100vw, 460px" alt="" loading="lazy" decoding="async">
+    <img src="{{ (trek.image_url or url_for('static', filename='images/waadi-kashmir-travels-logo-enhanced.webp'))|img(800) }}" srcset="{{ (trek.image_url or url_for('static', filename='images/waadi-kashmir-travels-logo-enhanced.webp'))|srcset('400,600,800,1200') }}" sizes="(max-width: 760px) 100vw, 460px" alt="" loading="lazy" decoding="async">
     {% if trek.tag %}<span class="ws-trek-tag">{{ trek.tag }}</span>{% endif %}
     <span class="ws-trek-kind">{{ kinds.get(trek.kind, 'Trek') }}</span>
   </a>

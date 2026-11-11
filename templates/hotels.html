@@ -38,7 +38,7 @@
         <div class="ws-hotel-grid" id="hotelGrid">
           {% for hotel in hotels %}
           <article class="ws-stay" data-location="{{ hotel.location_short.split(',')[0]|lower }}" data-price="{{ hotel.price }}" data-stars="{{ hotel.stars }}" data-theme="{{ hotel.theme }}" data-name="{{ hotel.name|lower }}" data-featured="{{ 1 if hotel.featured else 0 }}">
-            <img src="{{ (hotel.image or url_for('static', filename='images/waadi-kashmir-travels-logo-enhanced.webp'))|img(800) }}" srcset="{{ (hotel.image or url_for('static', filename='images/waadi-kashmir-travels-logo-enhanced.webp'))|srcset('400,800,1200') }}" sizes="(max-width: 760px) 100vw, 460px" alt="{{ hotel.name }}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/waadi-kashmir-travels-logo-enhanced.webp') }}'">
+            <img src="{{ (hotel.image or url_for('static', filename='images/waadi-kashmir-travels-logo-enhanced.webp'))|img(800) }}" srcset="{{ (hotel.image or url_for('static', filename='images/waadi-kashmir-travels-logo-enhanced.webp'))|srcset('400,600,800,1200') }}" sizes="(max-width: 760px) 100vw, 460px" alt="{{ hotel.name }}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/waadi-kashmir-travels-logo-enhanced.webp') }}'">
             {% if hotel.featured %}<span class="ws-feature">Featured</span>{% endif %}
             <div>
               <small>{{ hotel.location_short }}</small>
