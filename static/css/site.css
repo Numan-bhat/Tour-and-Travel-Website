@@ -96,14 +96,23 @@ main:focus { outline: none; }
 .ws-pill svg { width: 15px; height: 15px; fill: none; stroke: var(--violet); stroke-width: 2; }
 
 /* ---------- Top bar + header ---------- */
-.ws-topbar { background: var(--violet); color: #fff; font-size: .78rem; }
-.ws-topbar-inner { display: flex; justify-content: space-between; align-items: center; gap: 1rem; min-height: 38px; }
-.ws-topbar p { display: flex; align-items: center; gap: 1.2rem; }
-.ws-topbar p:first-child span:first-child { font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
-.ws-topbar-dot { opacity: .5; }
-.ws-topbar a { display: inline-flex; align-items: center; gap: .4rem; text-decoration: none; opacity: .92; }
-.ws-topbar a:hover { opacity: 1; text-decoration: underline; }
-.ws-topbar svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.8; }
+/* Top strip: night-plum gradient with gold accents (matches the welcome screen), soft light sweep, gold hairline. */
+.ws-topbar { position: relative; overflow: hidden; background: linear-gradient(100deg, #1a0b3a 0%, #2c1263 38%, #3d1677 62%, #1a0b3a 100%); color: rgba(255,255,255,.86); font-size: .78rem; }
+.ws-topbar::before { content: ""; position: absolute; inset: 0; background: linear-gradient(105deg, transparent 35%, rgba(227,200,143,.13) 50%, transparent 65%); transform: translateX(-100%); animation: wsTopbarSheen 9s ease-in-out 1.5s infinite; pointer-events: none; }
+.ws-topbar::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--gold) 20%, var(--gold-2) 50%, var(--gold) 80%, transparent); opacity: .75; }
+.ws-topbar-inner { position: relative; display: flex; justify-content: space-between; align-items: center; gap: 1rem; min-height: 40px; }
+.ws-topbar p { display: flex; align-items: center; gap: 1.1rem; margin: 0; }
+.ws-topbar p:first-child span:first-child { background: linear-gradient(180deg, #fff3d6, var(--gold-2) 55%, var(--gold)); -webkit-background-clip: text; background-clip: text; color: transparent; font: 700 .74rem/1 var(--display); letter-spacing: .16em; text-transform: uppercase; }
+.ws-topbar-dot { display: inline-block; width: 6px; height: 6px; overflow: hidden; background: var(--gold); color: transparent; transform: rotate(45deg); box-shadow: 0 0 10px rgba(227,200,143,.7); }
+.ws-topbar p:first-child span:last-child { letter-spacing: .04em; }
+.ws-topbar a { display: inline-flex; align-items: center; gap: .5rem; color: rgba(255,255,255,.9); text-decoration: none; transition: color .2s; }
+.ws-topbar a:hover, .ws-topbar a:focus-visible { color: var(--gold-2); }
+.ws-topbar svg { box-sizing: border-box; width: 24px; height: 24px; padding: 4.5px; border: 1px solid rgba(227,200,143,.55); border-radius: 50%; background: rgba(227,200,143,.1); fill: none; stroke: var(--gold-2); stroke-width: 1.8; transition: background .2s, border-color .2s; }
+.ws-topbar a:hover svg, .ws-topbar a:focus-visible svg { background: rgba(227,200,143,.22); border-color: var(--gold-2); }
+@keyframes wsTopbarSheen { 0%, 55% { transform: translateX(-100%); } 85%, 100% { transform: translateX(100%); } }
+@media (prefers-reduced-motion: reduce) { .ws-topbar::before { animation: none; display: none; } }
+.ws-topbar span, .ws-topbar a { white-space: nowrap; }
+@media (max-width: 1150px) { .ws-topbar-dot, .ws-topbar p:first-child span:last-child { display: none; } }
 
 .ws-header { position: sticky; top: 0; z-index: 50; background: rgba(18, 13, 28, .96); backdrop-filter: blur(12px); box-shadow: 0 1px 0 rgba(255,255,255,.06); transition: box-shadow .25s; }
 .ws-header.is-scrolled { box-shadow: 0 10px 30px rgba(0,0,0,.35); }
