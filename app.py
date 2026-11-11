@@ -101,6 +101,8 @@ app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 app.config["SESSION_COOKIE_SECURE"] = IS_PRODUCTION or os.environ.get("COOKIE_SECURE", "0") == "1"
 app.config["SESSION_COOKIE_NAME"] = "waadi_session"
+# Admin sign-ins expire after 12 hours, so a leaked or forgotten session cookie stops working.
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(hours=12)
 
 if IS_PRODUCTION:
     required_environment = ("SECRET_KEY", "ADMIN_USERNAME", "ADMIN_PASSWORD_HASH")
@@ -181,6 +183,13 @@ def add_security_headers(response):
     response.headers.setdefault("X-Frame-Options", "SAMEORIGIN")
     response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
     response.headers.setdefault("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
+    # Limited CSP: blocks clickjacking, <base> hijacking, plugins and forms posting to other sites
+    # without restricting the inline scripts, analytics and map embeds the pages rely on.
+    response.headers.setdefault(
+        "Content-Security-Policy",
+        "frame-ancestors 'self'; base-uri 'self'; object-src 'none'; form-action 'self'",
+    )
+    response.headers.setdefault("Cross-Origin-Opener-Policy", "same-origin")
     if request.path.startswith("/admin"):
         response.headers["Cache-Control"] = "no-store, private"
     elif request.path.startswith("/static/"):
@@ -193,8 +202,14 @@ def add_security_headers(response):
 
 
 def rate_limited(bucket, limit, window_seconds):
-    key = (bucket, request.headers.get("X-Forwarded-For", request.remote_addr or "unknown").split(",")[0].strip())
+    # remote_addr is the real client IP: in production ProxyFix sets it from the address Railway's
+    # proxy appended. Reading X-Forwarded-For directly would let anyone fake a fresh IP per request
+    # and guess the admin password without ever hitting the limit.
+    key = (bucket, request.remote_addr or "unknown")
     now = time.time()
+    if len(RATE_LIMITS) > 10000:  # keep memory bounded under a flood of distinct addresses
+        for stale in [k for k, v in RATE_LIMITS.items() if not v or v[-1] < now - 3600]:
+            del RATE_LIMITS[stale]
     attempts = RATE_LIMITS[key]
     while attempts and attempts[0] < now - window_seconds:
         attempts.popleft()
@@ -1924,6 +1939,7 @@ def admin_login():
         if secrets.compare_digest(username, app.config["ADMIN_USERNAME"]) and password_matches:
             session.clear()
             session["admin_logged_in"] = True
+            session.permanent = True
             session["csrf_token"] = secrets.token_urlsafe(32)
             return redirect(url_for("admin_dashboard"))
         error = "Invalid username or password."
