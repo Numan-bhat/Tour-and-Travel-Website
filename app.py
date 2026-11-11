@@ -140,6 +140,44 @@ def inject_site_context():
     }
 
 
+# AI-training and data-harvesting crawlers. Google, Bing and link previews (WhatsApp, Facebook) stay allowed.
+ROBOTS_BLOCKED_BOTS = (
+    "GPTBot", "ChatGPT-User", "OAI-SearchBot", "CCBot", "ClaudeBot", "Claude-Web", "anthropic-ai",
+    "Google-Extended", "Applebot-Extended", "PerplexityBot", "Bytespider", "Amazonbot", "meta-externalagent",
+    "cohere-ai", "Diffbot", "omgili", "ImagesiftBot", "Timpibot", "AhrefsBot", "SemrushBot", "MJ12bot",
+    "DotBot", "BLEXBot", "DataForSeoBot", "PetalBot",
+)
+# Scraping tools and bots refused outright (many ignore robots.txt).
+SCRAPER_AGENT_RE = re.compile(
+    "|".join(re.escape(bot.lower()) for bot in ROBOTS_BLOCKED_BOTS) + "|"
+    r"python-requests|python-urllib|python-httpx|aiohttp|scrapy|curl/|wget|go-http-client|java/|okhttp|"
+    r"libwww-perl|httrack|node-fetch|axios/|undici|headlesschrome|phantomjs|puppeteer|playwright|"
+    r"selenium|colly|httpclient|mechanize|scraper|crawler4j|webcopier|sitesucker|offline explorer"
+)
+# Pages per visitor address. Real guests view a handful of pages; a scraper copying the site needs dozens fast.
+PAGE_LIMITS = (("pages-minute", 40, 60), ("pages-hour", 300, 3600))
+UNLIMITED_PREFIXES = ("/static/", "/img/", "/quote-image/", "/health", "/favicon")
+
+
+def is_loopback_request():
+    return (request.remote_addr or "") in ("127.0.0.1", "::1")
+
+
+@app.before_request
+def block_scrapers():
+    if request.path.startswith(UNLIMITED_PREFIXES) or session.get("admin_logged_in") or is_loopback_request():
+        return None  # the server's own PDF browser visits over loopback; signed-in admin is never limited
+    agent = (request.headers.get("User-Agent") or "").lower()
+    if not agent or SCRAPER_AGENT_RE.search(agent):
+        abort(403)
+    for bucket, limit, window in PAGE_LIMITS:
+        if rate_limited(bucket, limit, window):
+            response = Response("Too many requests. Please wait a minute and try again.", status=429, mimetype="text/plain")
+            response.headers["Retry-After"] = str(window)
+            return response
+    return None
+
+
 @app.before_request
 def protect_requests():
     if request.path.startswith("/admin") and request.host.split(":", 1)[0].endswith("trycloudflare.com"):
@@ -1639,7 +1677,9 @@ def terms():
 
 @app.route("/robots.txt")
 def robots():
-    return Response(f"User-agent: *\nAllow: /\nDisallow: /admin\nSitemap: {url_for('sitemap', _external=True)}\n", mimetype="text/plain")
+    blocked = "".join(f"User-agent: {bot}\nDisallow: /\n\n" for bot in ROBOTS_BLOCKED_BOTS)
+    rules = "User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /quote\nDisallow: /quote-image\n\n"
+    return Response(blocked + rules + f"Sitemap: {url_for('sitemap', _external=True)}\n", mimetype="text/plain")
 
 
 @app.route("/sitemap.xml")
@@ -3157,21 +3197,6 @@ def admin_operations():
 def admin_complete_followup(followup_id):
     followup = FollowUp.query.get_or_404(followup_id); followup.done = True; db.session.commit()
     return redirect(url_for("admin_operations"))
-
-@app.route("/api/tours")
-def api_tours():
-    tours = [
-        {
-            "id": tour.id,
-            "title": tour.title,
-            "duration": tour.duration,
-            "price": tour.price,
-            "description": tour.description,
-        }
-        for tour in get_tours()
-    ]
-    return {"tours": tours}
-
 
 @app.route("/health")
 def health_check():
